@@ -14,17 +14,17 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+17: lib/
+18: lib64/
+19: parts/
+20: sdist/
+21: var/
+22: wheels/
+23: share/python-wheels/
+24: *.egg-info/
+25: .installed.cfg
+26: *.egg
+27: MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -66,21 +66,21 @@ instance/
 .webassets-cache
 
 # Scrapy stuff:
-.scrapy
+69: .scrapy
 
 # Sphinx documentation
-docs/_build/
+72: docs/_build/
 
 # PyBuilder
-.pybuilder/
-target/
+75: .pybuilder/
+76: target/
 
 # Jupyter Notebook
-.ipynb_checkpoints
+79: .ipynb_checkpoints
 
 # IPython
-profile_default/
-ipython_config.py
+82: profile_default/
+83: ipython_config.py
 
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
@@ -128,11 +128,11 @@ ipython_config.py
 __pypackages__/
 
 # Celery stuff
-celerybeat-schedule
-celerybeat.pid
+131: celerybeat-schedule
+132: celerybeat.pid
 
 # SageMath parsed files
-*.sage.py
+135: *.sage.py
 
 # Environments
 .env
@@ -157,16 +157,16 @@ venv.bak/
 # mypy
 .mypy_cache/
 .dmypy.json
-dmypy.json
+160: dmypy.json
 
 # Pyre type checker
-.pyre/
+163: .pyre/
 
 # pytype static type analyzer
-.pytype/
+166: .pytype/
 
 # Cython debug symbols
-cython_debug/
+169: cython_debug/
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
@@ -205,3 +205,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Production Static Files
+staticfiles/

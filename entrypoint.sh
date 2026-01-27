@@ -12,19 +12,22 @@ while ! uv run python -c "import socket; s = socket.socket(socket.AF_INET, socke
 done
 echo "Database is up!"
 
-# Apply database migrations
-echo "Applying database migrations..."
-uv run python manage.py migrate --noinput
+# --- ONLY THE WEB CONTAINER RUNS THESE SETUP STEPS ---
+if [ "$1" != "scheduler" ]; then
+    # Apply database migrations
+    echo "Applying database migrations..."
+    uv run python manage.py migrate --noinput
 
-# Collect static files (optional but good for production)
-echo "Collecting static files..."
-uv run python manage.py collectstatic --noinput || true
+    # Collect static files (Necessary for WhiteNoise)
+    echo "Collecting static files..."
+    uv run python manage.py collectstatic --noinput --clear
+fi
 
 # Check what we are supposed to run
 if [ "$1" = "scheduler" ]; then
     echo "Starting FOMC Scheduler..."
     uv run python scheduler.py
 else
-    echo "Starting Django Web Server..."
-    uv run python manage.py runserver 0.0.0.0:8000
+    echo "Starting Django Web Server with Gunicorn..."
+    uv run gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3
 fi
