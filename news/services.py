@@ -1,5 +1,8 @@
 import os
 import requests
+from django.utils.dateparse import parse_datetime
+from django.utils import timezone
+from .models import Article, Source
 
 url = "https://eventregistry.org/api/v1/article/"
 
@@ -116,3 +119,58 @@ def retrieve_articles(
 
     print(f"total data: {len(total_data)}")
     return total_data
+
+
+def save_articles(articles_data):
+    """
+    Takes a list of article dictionaries from the API and saves/updates them in the database.
+    """
+    saved_count = 0
+    updated_count = 0
+
+    for data in articles_data:
+        # 1. Handle Source
+        source_data = data.get("source", {})
+        source_uri = source_data.get("uri")
+
+        source = None
+        if source_uri:
+            source, _ = Source.objects.get_or_create(
+                uri=source_uri,
+                defaults={
+                    "title": source_data.get("title"),
+                    "data_type": source_data.get("dataType"),
+                    "image": source_data.get("image"),
+                },
+            )
+
+        # 2. Handle Article
+        pub_date_str = data.get("dateTimePub")
+        pub_date = parse_datetime(pub_date_str) if pub_date_str else None
+
+        article, created = Article.objects.update_or_create(
+            uri=data.get("uri"),
+            defaults={
+                "url": data.get("url"),
+                "title": data.get("title"),
+                "body": data.get("body"),
+                "lang": data.get("lang"),
+                "data_type": data.get("dataType"),
+                "source": source,
+                "sentiment": data.get("sentiment"),
+                "relevance": data.get("relevance"),
+                "image": data.get("image"),
+                "published_at": pub_date,
+                "authors": data.get("authors"),
+                "concepts": data.get("concepts"),
+                "categories": data.get("categories"),
+                "raw_data": data,
+            },
+        )
+
+        if created:
+            saved_count += 1
+        else:
+            updated_count += 1
+
+    return saved_count, updated_count

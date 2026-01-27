@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Environment
+.env
+
+# Linter/IDE
+.ruff_cache
+.vscode
+.idea
+
+# Database
+db.sqlite3
+postgres_data/
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
