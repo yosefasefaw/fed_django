@@ -1,0 +1,104 @@
+import datetime
+from django.utils import timezone
+
+FOMC_CALENDAR = [
+    datetime.datetime(2020, 1, 29, 19, 0),
+    datetime.datetime(2020, 3, 3, 18, 0),
+    datetime.datetime(2020, 3, 15, 18, 0),
+    datetime.datetime(2020, 4, 29, 18, 0),
+    datetime.datetime(2020, 6, 10, 18, 0),
+    datetime.datetime(2020, 7, 29, 18, 0),
+    datetime.datetime(2020, 9, 16, 18, 0),
+    datetime.datetime(2020, 11, 5, 19, 0),
+    datetime.datetime(2020, 12, 16, 19, 0),
+    datetime.datetime(2021, 1, 27, 19, 0),
+    datetime.datetime(2021, 3, 17, 18, 0),
+    datetime.datetime(2021, 4, 28, 18, 0),
+    datetime.datetime(2021, 6, 16, 18, 0),
+    datetime.datetime(2021, 7, 28, 18, 0),
+    datetime.datetime(2021, 9, 22, 18, 0),
+    datetime.datetime(2021, 11, 3, 18, 0),
+    datetime.datetime(2021, 12, 15, 19, 0),
+    datetime.datetime(2022, 1, 26, 19, 0),
+    datetime.datetime(2022, 3, 16, 18, 0),
+    datetime.datetime(2022, 5, 4, 18, 0),
+    datetime.datetime(2022, 6, 15, 18, 0),
+    datetime.datetime(2022, 7, 27, 18, 0),
+    datetime.datetime(2022, 9, 21, 18, 0),
+    datetime.datetime(2022, 11, 2, 18, 0),
+    datetime.datetime(2022, 12, 14, 19, 0),
+    datetime.datetime(2023, 2, 1, 19, 0),
+    datetime.datetime(2023, 3, 22, 18, 0),
+    datetime.datetime(2023, 5, 3, 18, 0),
+    datetime.datetime(2023, 6, 14, 18, 0),
+    datetime.datetime(2023, 7, 26, 18, 0),
+    datetime.datetime(2023, 9, 20, 18, 0),
+    datetime.datetime(2023, 11, 1, 18, 0),
+    datetime.datetime(2023, 12, 13, 19, 0),
+    datetime.datetime(2024, 1, 31, 19, 0),
+    datetime.datetime(2024, 3, 20, 18, 0),
+    datetime.datetime(2024, 5, 1, 18, 0),
+    datetime.datetime(2024, 6, 12, 18, 0),
+    datetime.datetime(2024, 7, 31, 18, 0),
+    datetime.datetime(2024, 9, 18, 18, 0),
+    datetime.datetime(2024, 11, 7, 19, 0),
+    datetime.datetime(2024, 12, 18, 19, 0),
+    datetime.datetime(2025, 1, 29, 19, 0),
+    datetime.datetime(2025, 3, 19, 18, 0),
+    datetime.datetime(2025, 5, 7, 18, 0),
+    datetime.datetime(2025, 6, 18, 18, 0),
+    datetime.datetime(2025, 7, 30, 18, 0),
+    datetime.datetime(2025, 9, 17, 18, 0),
+    datetime.datetime(2025, 10, 29, 18, 0),
+    datetime.datetime(2025, 12, 10, 19, 0),
+    datetime.datetime(2026, 1, 28, 19, 0),
+    datetime.datetime(2026, 3, 18, 18, 0),
+    datetime.datetime(2026, 4, 29, 18, 0),
+    datetime.datetime(2026, 6, 17, 18, 0),
+    datetime.datetime(2026, 7, 29, 18, 0),
+    datetime.datetime(2026, 9, 16, 18, 0),
+    datetime.datetime(2026, 10, 28, 18, 0),
+    datetime.datetime(2026, 12, 9, 19, 0),
+    datetime.datetime(2027, 1, 27, 19, 0),
+    datetime.datetime(2027, 3, 17, 18, 0),
+    datetime.datetime(2027, 4, 28, 18, 0),
+    datetime.datetime(2027, 6, 9, 18, 0),
+    datetime.datetime(2027, 7, 28, 18, 0),
+    datetime.datetime(2027, 9, 15, 18, 0),
+    datetime.datetime(2027, 10, 27, 18, 0),
+    datetime.datetime(2027, 12, 8, 19, 0),
+]
+
+def is_in_fomc_critical_window(now=None):
+    """
+    Checks if the given time (defaults to now) is within 
+    24h before to 9h after an FOMC meeting.
+    """
+    if now is None:
+        now = timezone.now()
+
+    for meeting_date in FOMC_CALENDAR:
+        # Simple timezone awareness
+        if timezone.is_naive(meeting_date):
+            aware_meeting = timezone.make_aware(meeting_date)
+        else:
+            aware_meeting = meeting_date
+            
+        window_start = aware_meeting - datetime.timedelta(hours=24)
+        window_end = aware_meeting + datetime.timedelta(hours=9)
+        
+        if window_start <= now <= window_end:
+            return True
+            
+    return False
+
+
+def is_in_mock_critical_window(now=None):
+    """
+    Mock logic: Returns True if the current minute is a multiple of 5
+    (e.g., 00, 05, 10, 15...).
+    """
+    if now is None:
+        now = timezone.now()
+    
+    return now.minute % 5 == 0
