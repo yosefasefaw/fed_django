@@ -4,12 +4,13 @@ from django.utils import timezone
 from news.models import FetchLog
 from news.utils import is_in_fomc_critical_window, is_in_mock_critical_window
 
+
 class Command(BaseCommand):
     help = "Test command using shared utility logic"
 
     def handle(self, *args, **options):
         now = timezone.now()
-        
+
         # Call the MOCK utility function for testing!
         is_critical = is_in_mock_critical_window(now)
 
@@ -31,4 +32,6 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(msg))
             FetchLog.objects.create(message=msg)
         else:
-            self.stdout.write(f"SKIPPING: (Critical Window: {is_critical}) at {now.strftime('%H:%M:%S')}")
+            self.stdout.write(
+                f"SKIPPING: (Critical Window: {is_critical}) at {now.strftime('%H:%M:%S')}"
+            )

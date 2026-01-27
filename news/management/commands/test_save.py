@@ -5,21 +5,20 @@ from datetime import timedelta
 from news.services import retrieve_articles
 from news.models import Article, Source
 
+
 class Command(BaseCommand):
     help = "Test fetching and saving articles to the database"
 
     def handle(self, *args, **options):
         self.stdout.write("Fetching articles to test database saving...")
-        
+
         try:
             date_end = timezone.now()
             date_start = date_end - timedelta(hours=2)
             articles_data = retrieve_articles(
-                date_start=date_start,
-                date_end=date_end,
-                articles_count=2
+                date_start=date_start, date_end=date_end, articles_count=2
             )
-            
+
             if not articles_data:
                 self.stdout.write(self.style.WARNING("No articles found to save."))
                 return
@@ -29,7 +28,7 @@ class Command(BaseCommand):
                 # 1. Handle Source
                 source_data = data.get("source", {})
                 source_uri = source_data.get("uri")
-                
+
                 source = None
                 if source_uri:
                     source, _ = Source.objects.get_or_create(
@@ -38,7 +37,7 @@ class Command(BaseCommand):
                             "title": source_data.get("title"),
                             "data_type": source_data.get("dataType"),
                             "image": source_data.get("image"),
-                        }
+                        },
                     )
 
                 # 2. Handle Article
@@ -61,21 +60,28 @@ class Command(BaseCommand):
                         "authors": data.get("authors"),
                         "concepts": data.get("concepts"),
                         "categories": data.get("categories"),
-                        "raw_data": data
-                    }
+                        "raw_data": data,
+                    },
                 )
-                
+
                 if created:
                     saved_count += 1
                     self.stdout.write(f"✔ Saved: {article.title}")
                 else:
                     self.stdout.write(f"ℹ Updated: {article.title}")
 
-            self.stdout.write(self.style.SUCCESS(f"\nFinished! Total new articles saved: {saved_count}"))
-            self.stdout.write(f"Check the admin: http://127.0.0.1:8000/admin/news/article/")
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"\nFinished! Total new articles saved: {saved_count}"
+                )
+            )
+            self.stdout.write(
+                f"Check the admin: http://127.0.0.1:8000/admin/news/article/"
+            )
 
         except Exception as e:
             self.stderr.write(self.style.ERROR(f"✖ Database Save Test Failed!"))
             self.stderr.write(f"Error details: {str(e)}")
             import traceback
+
             self.stderr.write(traceback.format_exc())
