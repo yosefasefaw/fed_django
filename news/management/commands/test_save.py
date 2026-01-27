@@ -76,11 +76,11 @@ class Command(BaseCommand):
                 )
             )
             self.stdout.write(
-                f"Check the admin: http://127.0.0.1:8000/admin/news/article/"
+                "Check the admin: http://127.0.0.1:8000/admin/news/article/"
             )
 
         except Exception as e:
-            self.stderr.write(self.style.ERROR(f"✖ Database Save Test Failed!"))
+            self.stderr.write(self.style.ERROR("✖ Database Save Test Failed!"))
             self.stderr.write(f"Error details: {str(e)}")
             import traceback
 

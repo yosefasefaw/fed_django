@@ -1,8 +1,7 @@
-import datetime
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from news.models import FetchLog
-from news.utils import is_in_fomc_critical_window, is_in_mock_critical_window
+from news.utils import is_in_mock_critical_window
 
 
 class Command(BaseCommand):

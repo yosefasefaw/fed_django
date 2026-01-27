@@ -47,5 +47,5 @@ class Command(BaseCommand):
                 )
 
         except Exception as e:
-            self.stderr.write(self.style.ERROR(f"✖ API Call Failed!"))
+            self.stderr.write(self.style.ERROR("✖ API Call Failed!"))
             self.stderr.write(f"Error details: {str(e)}")
