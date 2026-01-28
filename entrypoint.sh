@@ -6,8 +6,12 @@ set -e
 echo "--- 🚀 Starting Entrypoint Script ---"
 
 # Wait for the database to be ready
-echo "Waiting for database..."
-while ! uv run python -c "import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.connect(('db', 5432))" > /dev/null 2>&1; do
+# We use environment variables so this works on both Local and Railway
+DB_HOST=${POSTGRES_HOST:-db}
+DB_PORT=${POSTGRES_PORT:-5432}
+
+echo "Waiting for database at $DB_HOST:$DB_PORT..."
+while ! uv run python -c "import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.connect(('$DB_HOST', $DB_PORT))" > /dev/null 2>&1; do
   sleep 1
 done
 echo "Database is up!"
