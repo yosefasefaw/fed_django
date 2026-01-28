@@ -6,7 +6,7 @@ This document provides a comprehensive overview of the project's architecture, d
 
 ## 🌟 Project Overview
 This is a Django-based application designed to track and analyze **Federal Open Market Committee (FOMC)** news. It features:
-*   An automated **Sc scraper/Scheduler** that fetches real-time articles from the Event Registry API.
+*   An automated **Scraper/Scheduler** that fetches real-time articles from the Event Registry API.
 *   A **PostgreSQL database** with `pgvector` for future semantic search capabilities.
 *   A **Dockerized environment** for consistent local development and production parity.
 
