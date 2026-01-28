@@ -10,10 +10,11 @@ class SourceAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ("title", "source", "published_at", "colored_sentiment", "lang")
+    list_display = ("uuid", "title", "source", "published_at", "colored_sentiment", "lang")
     list_filter = ("source", "lang", "published_at")
-    search_fields = ("title", "body")
+    search_fields = ("title", "body", "uuid")
     date_hierarchy = "published_at"
+    readonly_fields = ("uuid",)
 
     def colored_sentiment(self, obj):
         if obj.sentiment is None:
