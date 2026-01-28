@@ -7,7 +7,6 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from news.models import Article
 from news.selectors import get_articles_from_db
 from multi_agent_systems.helpers import (
     format_articles_for_agent,
@@ -16,7 +15,7 @@ from multi_agent_systems.helpers import (
 )
 from multi_agent_systems.dn_mas.runner import dn_mas_runner
 from multi_agent_systems.dn_mas.schemas import SummaryWithCitations
-from multi_agent_systems.models import Summary, Citation, CitationSource
+from multi_agent_systems.services import save_dn_mas_summary
 
 
 class Command(BaseCommand):
@@ -116,42 +115,16 @@ class Command(BaseCommand):
                 # Save to database
                 if save_to_db:
                     self.stdout.write("\n💾 Saving to database...")
-                    summary_obj = self._save_summary(enriched_summary, articles_list, start_date, end_date)
+                    summary_obj = save_dn_mas_summary(
+                        enriched_summary=enriched_summary,
+                        articles_list=articles_list,
+                        start_date=start_date,
+                        end_date=end_date,
+                        agent_name="test_dn_mas"
+                    )
                     self.stdout.write(self.style.SUCCESS(f"✅ Saved Summary: {summary_obj.uuid}"))
             
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"\n❌ Pipeline failed: {str(e)}"))
             import traceback
             self.stdout.write(traceback.format_exc())
-
-    def _save_summary(self, enriched_summary, articles_list, start_date, end_date):
-        """
-        Save using the clean, type-safe EnrichedSummaryWithCitations model.
-        """
-        summary_obj = Summary.objects.create(
-            summary_text=enriched_summary.summary_text,
-            article_count=len(articles_list),
-            date_range_start=start_date,
-            date_range_end=end_date,
-            agent_name="test_dn_mas"
-        )
-        summary_obj.articles_provided.set(articles_list)
-        
-        for citation in enriched_summary.citations:
-            citation_obj = Citation.objects.create(
-                summary=summary_obj,
-                summary_sentence=citation.summary_sentence
-            )
-            for source in citation.sources:
-                article_obj = Article.objects.filter(uuid=source.article_uuid).first()
-                CitationSource.objects.create(
-                    citation=citation_obj,
-                    article=article_obj,
-                    sentence=source.sentence,
-                    expert_name=source.expert_name,
-                    article_uuid=source.article_uuid,
-                    article_source=source.article_source,
-                    article_title=source.article_title,
-                    article_url=source.article_url
-                )
-        return summary_obj
