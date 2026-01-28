@@ -115,3 +115,147 @@ class CitationSource(models.Model):
     
     def __str__(self):
         return f"Source: {self.article_source} - {self.sentence[:30]}..."
+
+
+# --- ST-MAS (Static Topic MAS) Models ---
+
+class TopicAnalysisGroup(models.Model):
+    """
+    Parent container for a collection of topic analyses (ST-MAS run).
+    """
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    agent_name = models.TextField(default="st_mas")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Articles used for this whole run
+    articles_provided = models.ManyToManyField(
+        Article, 
+        related_name="topic_analysis_groups"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name_plural = "Topic Analysis Groups"
+
+    def __str__(self):
+        return f"Analysis Group {self.uuid} ({self.created_at.strftime('%Y-%m-%d')})"
+
+
+class TopicAnalysis(models.Model):
+    """
+    A specific topic analysis (e.g., Housing, Inflation) within a group.
+    """
+    group = models.ForeignKey(
+        TopicAnalysisGroup, 
+        on_delete=models.CASCADE, 
+        related_name="topics"
+    )
+    topic_name = models.TextField()  # Housing, Labor, etc.
+    sentiment = models.CharField(max_length=20)  # hawkish, dovish, neutral
+    summary_text = models.TextField()
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Topic Analyses"
+
+    def __str__(self):
+        return f"{self.topic_name} Analysis ({self.sentiment})"
+
+
+class TopicMetric(models.Model):
+    """Metrics extracted for a specific topic analysis."""
+    topic_analysis = models.ForeignKey(
+        TopicAnalysis, 
+        on_delete=models.CASCADE, 
+        related_name="metrics"
+    )
+    name = models.TextField()
+    value = models.TextField()
+    period = models.TextField()
+    discussion = models.TextField()
+    sentiment = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.name}: {self.value}"
+
+
+class TopicExpert(models.Model):
+    """Expert opinions extracted for a specific topic analysis."""
+    topic_analysis = models.ForeignKey(
+        TopicAnalysis, 
+        on_delete=models.CASCADE, 
+        related_name="experts"
+    )
+    expert_name = models.TextField()
+    organization = models.TextField()
+    opinion = models.TextField()
+    sentiment = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.expert_name} ({self.organization})"
+
+
+class TopicCitation(models.Model):
+    """
+    Citations for ST-MAS. Can link to a TopicAnalysis summary,
+    a TopicMetric discussion, or a TopicExpert opinion.
+    """
+    # Link to one of these
+    topic_analysis = models.ForeignKey(
+        TopicAnalysis, 
+        on_delete=models.CASCADE, 
+        related_name="summary_citations", 
+        null=True, 
+        blank=True
+    )
+    metric = models.ForeignKey(
+        TopicMetric, 
+        on_delete=models.CASCADE, 
+        related_name="citations", 
+        null=True, 
+        blank=True
+    )
+    expert = models.ForeignKey(
+        TopicExpert, 
+        on_delete=models.CASCADE, 
+        related_name="citations", 
+        null=True, 
+        blank=True
+    )
+
+    summary_sentence = models.TextField()
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"Topic Citation: {self.summary_sentence[:50]}..."
+
+
+class TopicCitationSource(models.Model):
+    """The source article/quote for a TopicCitation."""
+    topic_citation = models.ForeignKey(
+        TopicCitation, 
+        on_delete=models.CASCADE, 
+        related_name="sources"
+    )
+    
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        related_name="topic_citation_sources",
+        null=True,
+        blank=True
+    )
+    
+    sentence = models.TextField()
+    expert_name = models.TextField(null=True, blank=True)
+    article_uuid = models.TextField()
+    article_source = models.TextField(null=True, blank=True)
+    article_title = models.TextField(null=True, blank=True)
+    article_url = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Topic Source from {self.article_source}"

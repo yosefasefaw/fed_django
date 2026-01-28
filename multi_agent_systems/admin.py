@@ -1,19 +1,11 @@
 from django.contrib import admin
-from .models import Summary, Citation, CitationSource
+from .models import (
+    Summary, Citation, CitationSource,
+    TopicAnalysisGroup, TopicAnalysis, TopicMetric, 
+    TopicExpert, TopicCitation, TopicCitationSource
+)
 
-
-class CitationSourceInline(admin.TabularInline):
-    model = CitationSource
-    extra = 0
-    readonly_fields = ("article", "sentence", "expert_name", "article_uuid", "article_source", "article_title", "article_url")
-
-
-class CitationInline(admin.TabularInline):
-    model = Citation
-    extra = 0
-    readonly_fields = ("summary_sentence", "order")
-    show_change_link = True
-
+# --- DN-MAS Admin ---
 
 @admin.register(Summary)
 class SummaryAdmin(admin.ModelAdmin):
@@ -21,7 +13,6 @@ class SummaryAdmin(admin.ModelAdmin):
     list_filter = ("agent_name", "created_at")
     search_fields = ("uuid", "summary_text")
     readonly_fields = ("uuid", "created_at")
-    inlines = [CitationInline]
     
     fieldsets = (
         ("Summary", {
@@ -38,7 +29,6 @@ class CitationAdmin(admin.ModelAdmin):
     list_display = ("summary", "order", "summary_sentence_preview")
     list_filter = ("summary",)
     search_fields = ("summary_sentence",)
-    inlines = [CitationSourceInline]
     
     def summary_sentence_preview(self, obj):
         return obj.summary_sentence[:80] + "..." if len(obj.summary_sentence) > 80 else obj.summary_sentence
@@ -54,3 +44,45 @@ class CitationSourceAdmin(admin.ModelAdmin):
     def sentence_preview(self, obj):
         return obj.sentence[:60] + "..." if len(obj.sentence) > 60 else obj.sentence
     sentence_preview.short_description = "Quote"
+
+
+# --- ST-MAS Admin ---
+
+@admin.register(TopicAnalysisGroup)
+class TopicAnalysisGroupAdmin(admin.ModelAdmin):
+    list_display = ("uuid", "created_at")
+    readonly_fields = ("uuid", "created_at")
+
+
+@admin.register(TopicAnalysis)
+class TopicAnalysisAdmin(admin.ModelAdmin):
+    list_display = ("topic_name", "sentiment", "group", "created_at")
+    list_filter = ("topic_name", "sentiment", "created_at")
+
+
+@admin.register(TopicMetric)
+class TopicMetricAdmin(admin.ModelAdmin):
+    list_display = ("name", "value", "topic_analysis", "sentiment")
+    list_filter = ("sentiment", "topic_analysis")
+
+
+@admin.register(TopicExpert)
+class TopicExpertAdmin(admin.ModelAdmin):
+    list_display = ("expert_name", "organization", "topic_analysis", "sentiment")
+    list_filter = ("sentiment", "topic_analysis")
+
+
+@admin.register(TopicCitation)
+class TopicCitationAdmin(admin.ModelAdmin):
+    list_display = ("topic_analysis", "metric", "expert", "summary_sentence_preview")
+    
+    def summary_sentence_preview(self, obj):
+        return obj.summary_sentence[:80] + "..." if len(obj.summary_sentence) > 80 else obj.summary_sentence
+
+
+@admin.register(TopicCitationSource)
+class TopicCitationSourceAdmin(admin.ModelAdmin):
+    list_display = ("topic_citation", "article_source", "expert_name", "sentence_preview")
+    
+    def sentence_preview(self, obj):
+        return obj.sentence[:60] + "..." if len(obj.sentence) > 60 else obj.sentence
