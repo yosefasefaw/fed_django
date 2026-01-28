@@ -12,7 +12,7 @@ information_extraction_agent = LlmAgent(
     model=GEMINI_MODEL,
     instruction=information_extraction_instruction,
     description="Extracts information from the article.",
-    output_key="extracted_information"
+    output_key="extracted_information",
 )
 
 information_summarizer_agent = LlmAgent(
@@ -34,7 +34,11 @@ information_citation_agent = LlmAgent(
 
 summarizer_agent = SequentialAgent(
     name="summarization_pipeline",
-    sub_agents=[information_extraction_agent, information_summarizer_agent, information_citation_agent],
+    sub_agents=[
+        information_extraction_agent,
+        information_summarizer_agent,
+        information_citation_agent,
+    ],
     description="Executes a sequence of information extraction, summarization, and citation.",
 )
 

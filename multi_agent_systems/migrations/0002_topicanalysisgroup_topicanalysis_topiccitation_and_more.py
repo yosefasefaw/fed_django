@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("multi_agent_systems", "0001_initial"),
         ("news", "0002_source_alter_fetchlog_message_article"),

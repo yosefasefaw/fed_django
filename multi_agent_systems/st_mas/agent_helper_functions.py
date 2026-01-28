@@ -3,6 +3,7 @@ FOMC Topic Analysis Agents - Helper Functions.
 
 Factory functions for creating topic-specific analysis agents.
 """
+
 from google.adk.agents import LlmAgent
 
 from .instructions import create_analysis_prompt, Topic
@@ -15,10 +16,10 @@ GEMINI_MODEL = "gemini-3-flash-preview"
 def create_topic_agent(topic: Topic) -> LlmAgent:
     """
     Factory function to create a topic-specific analysis agent.
-    
+
     Args:
         topic: The Topic enum value for this agent.
-        
+
     Returns:
         A configured LlmAgent for the specified topic with structured output.
     """
@@ -35,5 +36,6 @@ def create_topic_agent(topic: Topic) -> LlmAgent:
 def create_all_predefined_agents() -> list[LlmAgent]:
     """Create agents for all predefined topics in the Topic enum."""
     return [create_topic_agent(topic) for topic in Topic]
+
 
 # we need to be able to change the TOPIC list dynamically according to the user's choice

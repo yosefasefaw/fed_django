@@ -1,9 +1,15 @@
 from typing import List
 from django.db import transaction
 from .models import (
-    Summary, Citation, CitationSource,
-    TopicAnalysisGroup, TopicAnalysis, TopicMetric, 
-    TopicExpert, TopicCitation, TopicCitationSource
+    Summary,
+    Citation,
+    CitationSource,
+    TopicAnalysisGroup,
+    TopicAnalysis,
+    TopicMetric,
+    TopicExpert,
+    TopicCitation,
+    TopicCitationSource,
 )
 from news.models import Article
 from .dn_mas.schemas import EnrichedSummaryWithCitations
@@ -11,11 +17,11 @@ from .st_mas.schemas import TopicAnalysisCollection
 
 
 def save_dn_mas_summary(
-    enriched_summary: EnrichedSummaryWithCitations, 
-    articles_list: List[Article], 
-    start_date=None, 
-    end_date=None, 
-    agent_name: str = "dn_mas"
+    enriched_summary: EnrichedSummaryWithCitations,
+    articles_list: List[Article],
+    start_date=None,
+    end_date=None,
+    agent_name: str = "dn_mas",
 ) -> Summary:
     """
     Saves a DN-MAS summary and its citations to the database.
@@ -28,24 +34,26 @@ def save_dn_mas_summary(
             article_count=len(articles_list),
             date_range_start=start_date,
             date_range_end=end_date,
-            agent_name=agent_name
+            agent_name=agent_name,
         )
-        
+
         # 2. Link all Articles provided to the agent
         summary_obj.articles_provided.set(articles_list)
-        
+
         # 3. Create Citations and their Sources
         for i, citation_data in enumerate(enriched_summary.citations):
             citation_obj = Citation.objects.create(
                 summary=summary_obj,
                 summary_sentence=citation_data.summary_sentence,
-                order=i
+                order=i,
             )
-            
+
             for source_data in citation_data.sources:
                 # Try to find the actual Article object using the UUID
-                article_obj = Article.objects.filter(uuid=source_data.article_uuid).first()
-                
+                article_obj = Article.objects.filter(
+                    uuid=source_data.article_uuid
+                ).first()
+
                 CitationSource.objects.create(
                     citation=citation_obj,
                     article=article_obj,
@@ -54,16 +62,16 @@ def save_dn_mas_summary(
                     article_uuid=source_data.article_uuid,
                     article_source=source_data.article_source,
                     article_title=source_data.article_title,
-                    article_url=source_data.article_url
+                    article_url=source_data.article_url,
                 )
-                
+
     return summary_obj
 
 
 def save_st_mas_collection(
     collection: TopicAnalysisCollection,
     articles_list: List[Article],
-    agent_name: str = "st_mas"
+    agent_name: str = "st_mas",
 ) -> TopicAnalysisGroup:
     """
     Saves a collection of topic analyses (ST-MAS) to the database.
@@ -72,16 +80,16 @@ def save_st_mas_collection(
         # 1. Create the Group
         group_obj = TopicAnalysisGroup.objects.create(agent_name=agent_name)
         group_obj.articles_provided.set(articles_list)
-        
+
         # 2. Process each Topic
         for topic_name, analysis in collection.items():
             topic_obj = TopicAnalysis.objects.create(
                 group=group_obj,
                 topic_name=topic_name,
                 sentiment=analysis.sentiment,
-                summary_text=analysis.executive_summary.summary_text
+                summary_text=analysis.executive_summary.summary_text,
             )
-            
+
             # 3. Save Metrics
             for metric in analysis.key_metrics:
                 metric_obj = TopicMetric.objects.create(
@@ -90,11 +98,11 @@ def save_st_mas_collection(
                     value=str(metric.value),
                     period=metric.metric_period,
                     discussion=metric.metric_discussion,
-                    sentiment=metric.sentiment
+                    sentiment=metric.sentiment,
                 )
                 # Metric Citations
                 _save_topic_citations(metric_obj, metric.citations, "metric")
-            
+
             # 4. Save Experts
             for expert in analysis.expert_analyses:
                 expert_obj = TopicExpert.objects.create(
@@ -102,14 +110,16 @@ def save_st_mas_collection(
                     expert_name=expert.expert_name,
                     organization=expert.expert_organization,
                     opinion=expert.expert_opinion,
-                    sentiment=expert.sentiment
+                    sentiment=expert.sentiment,
                 )
                 # Expert Citations
                 _save_topic_citations(expert_obj, expert.citations, "expert")
-                
+
             # 5. Save Summary Citations
-            _save_topic_citations(topic_obj, analysis.executive_summary.citations, "analysis")
-            
+            _save_topic_citations(
+                topic_obj, analysis.executive_summary.citations, "analysis"
+            )
+
     return group_obj
 
 
@@ -119,7 +129,7 @@ def _save_topic_citations(parent_obj, citations_data, parent_type: str):
         # Handle the different structure of executive summary citations vs metric/expert citations
         # Metrics/Experts have a direct list of ArticleSentenceCitation
         # Executive summary has a list of Citations which contain article_sentence_citations
-        
+
         if parent_type == "analysis":
             # For the executive summary
             summary_sentence = citation.summary_sentence
@@ -131,19 +141,18 @@ def _save_topic_citations(parent_obj, citations_data, parent_type: str):
             sources = [citation] if not isinstance(citation, list) else citation
 
         topic_citation = TopicCitation.objects.create(
-            summary_sentence=summary_sentence,
-            order=i
+            summary_sentence=summary_sentence, order=i
         )
-        
+
         if parent_type == "analysis":
             topic_citation.topic_analysis = parent_obj
         elif parent_type == "metric":
             topic_citation.metric = parent_obj
         elif parent_type == "expert":
             topic_citation.expert = parent_obj
-            
+
         topic_citation.save()
-        
+
         # Save sources
         for src in sources:
             article_obj = Article.objects.filter(uuid=src.article_uuid).first()
@@ -155,5 +164,5 @@ def _save_topic_citations(parent_obj, citations_data, parent_type: str):
                 article_uuid=src.article_uuid,
                 article_source=src.article_source,
                 article_title=src.article_title,
-                article_url=src.article_url
+                article_url=src.article_url,
             )

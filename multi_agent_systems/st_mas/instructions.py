@@ -3,11 +3,13 @@ Prompt templates for FOMC topic analysis agents.
 
 Uses a factory pattern for scalable, type-safe prompt generation.
 """
+
 from enum import Enum
 
 
 class Topic(str, Enum):
     """Predefined FOMC analysis topics."""
+
     HOUSING = "Real Estate & Housing Market"
     LABOR = "Labor Market & Unemployment"
     INFLATION = "Inflation & Price Stability"
@@ -22,10 +24,10 @@ class Topic(str, Enum):
 def create_analysis_prompt(topic: Topic) -> str:
     """
     Generate a specialized FOMC analysis prompt for a given topic.
-    
+
     Args:
         topic: The Topic enum value to generate a prompt for.
-        
+
     Returns:
         A formatted prompt string with {articles_text} placeholder.
     """
