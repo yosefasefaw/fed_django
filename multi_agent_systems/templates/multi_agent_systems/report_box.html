@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Report Box - Fed Intelligence{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/report_box.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="report-box-page animate-fade-in">
+
+    <header class="page-header">
+        <h1>Report Box</h1>
+        <p class="text-muted">All generated reports from the multi-agent pipelines, sorted by date. Click a row to view
+            details.</p>
+    </header>
+
+    <div class="table-wrapper card">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>ID</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr class="clickable-row" {% if report.report_type == "summary" %}
+                    data-href="{% url 'multi_agent_systems:summary_detail' uuid=report.uuid %}" {% else %} data-href="#"
+                    {% endif %}>
+                    <td class="date-cell">{{ report.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if report.report_type == "summary" %}
+                        <span class="type-badge type-summary">Summary</span>
+                        {% else %}
+                        <span class="type-badge type-analysis">Topic Analysis</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="uuid-chip">{{ report.uuid|stringformat:".8s" }}...</span></td>
+                    <td class="details-cell">
+                        {% if report.report_type == "summary" %}
+                        <span class="count-badge">{{ report.article_count }} articles</span>
+                        <span class="preview-text">{{ report.summary_text|truncatewords:8 }}</span>
+                        {% else %}
+                        <span class="count-badge">{{ report.topic_analyses.count }} topics</span>
+                        <span class="count-badge">{{ report.articles_provided.count }} articles</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="empty-row">No reports generated yet. Run the scheduler to generate summaries
+                        and analyses.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/report_box.js' %}"></script>
+{% endblock %}

@@ -1,37 +1,6 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fed Precision News</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@400;500&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-</head>
+{% block title %}Home - Fed Intelligence{% endblock %}
 
-<body>
-    <div class="bg-glow"></div>
-
-    <div class="container">
-        <h1>Latest Insights</h1>
-
-        <button id="fetchBtn" class="btn">
-            <span id="btnText">Fetch Latest Article</span>
-            <div id="loader" class="loader"></div>
-        </button>
-
-        <div id="result" class="article-card">
-            <p id="placeholder" class="empty-state">No article fetched yet.</p>
-            <h2 id="title"></h2>
-            <div id="date"></div>
-        </div>
-    </div>
-
-    <script src="{% static 'js/home.js' %}"></script>
-</body>
-
-</html>
+{% block content %}
+{% endblock %}

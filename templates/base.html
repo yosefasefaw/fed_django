@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fed Intelligence - FOMC Tracker{% endblock %}</title>
+
+    <!-- Fonts: Spectral -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Base Styles -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="{% url 'news:home' %}" class="nav-brand">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18" />
+                        <path d="m19 9-5 5-4-4-3 3" />
+                    </svg>
+                    <span>Fed Intelligence</span>
+                </a>
+
+                <div class="nav-links">
+                    <a href="{% url 'news:home' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                    <a href="{% url 'multi_agent_systems:report_box' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'report_box' %}active{% endif %}">Report
+                        Box</a>
+                    <a href="{% url 'multi_agent_systems:latest_summary' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'summary_detail' or request.resolver_match.url_name == 'latest_summary' %}active{% endif %}">Summary</a>
+                    <a href="#" class="nav-link disabled">Topic Analysis</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer>
+            <div class="footer-container">
+                <div class="footer-text">
+                    &copy; {% now "Y" %} Fed Intelligence. Precision Analysis for FOMC Markets.
+                </div>
+                <div class="nav-links">
+                    <a href="https://github.com/yosefasefaw/fed_django" class="nav-link" target="_blank">GitHub</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

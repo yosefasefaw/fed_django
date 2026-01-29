@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Summary - {{ summary.uuid|stringformat:".8s" }} - Fed Intelligence{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/summary_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="summary-layout">
+
+    <!-- Left Sidebar -->
+    <aside class="summary-sidebar">
+        <div class="sidebar-section">
+            <h4>Report Info</h4>
+            <div class="info-item">
+                <span class="info-label">Type</span>
+                <span class="type-badge type-summary">DN-MAS</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Generated</span>
+                <span class="info-value">{{ summary.created_at|date:"M j, Y" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Time</span>
+                <span class="info-value">{{ summary.created_at|date:"H:i" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Articles</span>
+                <span class="info-value">{{ summary.article_count }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">ID</span>
+                <span class="uuid-chip">{{ summary.uuid|stringformat:".8s" }}...</span>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h4>Navigation</h4>
+            <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-outline btn-full">← Report Box</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="summary-main animate-fade-in">
+        <header class="summary-header">
+            <h1>Daily News Summary</h1>
+            <p class="subtitle text-muted">Click on any sentence to view its supporting sources</p>
+        </header>
+
+        <article class="summary-content card">
+            <div class="summary-text">
+                {% for citation in summary.citations.all %}<span
+                    class="citable-sentence {% if citation.sources.count > 0 %}has-sources{% endif %}"
+                    data-citation-id="{{ citation.id }}">{{ citation.summary_sentence }}</span> {% empty %}{{
+                summary.summary_text|linebreaks }}{% endfor %}
+            </div>
+        </article>
+    </main>
+
+    <!-- Right Sidebar for Citations -->
+    <aside class="citation-sidebar" id="citationPanel">
+        <div class="citation-header">
+            <h4>Supporting Sources</h4>
+            <button class="close-btn" id="closeCitations">&times;</button>
+        </div>
+        <div class="citation-content" id="citationContent">
+            <p class="placeholder-text">Select a sentence to view its sources.</p>
+        </div>
+    </aside>
+
+</div>
+
+<!-- Citation data as JSON for JavaScript -->
+<script type="application/json" id="citationData">
+{
+    {% for citation in summary.citations.all %}
+    "{{ citation.id }}": {
+        "sentence": "{{ citation.summary_sentence|escapejs }}",
+        "sources": [
+            {% for source in citation.sources.all %}
+            {
+                "sentence": "{{ source.sentence|escapejs }}",
+                "article_title": "{{ source.article_title|escapejs }}",
+                "article_source": "{{ source.article_source|escapejs }}",
+                "article_url": "{{ source.article_url|escapejs }}",
+                "expert_name": "{{ source.expert_name|default:''|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/summary_detail.js' %}"></script>
+{% endblock %}

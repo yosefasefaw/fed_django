@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Summary - Fed Intelligence{% endblock %}
+
+{% block content %}
+<div class="empty-state-page animate-fade-in">
+    <div class="empty-content">
+        <div class="empty-icon">📄</div>
+        <h1>No Summaries Yet</h1>
+        <p class="text-muted">
+            The multi-agent system hasn't generated any summaries yet.<br>
+            Run the scheduler or use the management command to create one.
+        </p>
+        <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-primary mt-3">Go to Report Box</a>
+    </div>
+</div>
+
+<style>
+    .empty-state-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+
+    .empty-content {
+        text-align: center;
+        max-width: 400px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-content h1 {
+        font-size: 1.75rem;
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}
