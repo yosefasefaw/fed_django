@@ -44,12 +44,12 @@
 
     <!-- Main Content -->
     <main class="summary-main animate-fade-in">
-        <header class="summary-header">
-            <h1>Daily News Summary</h1>
-            <p class="subtitle text-muted">Click on any sentence to view its supporting sources</p>
-        </header>
-
         <article class="summary-content card">
+            <header class="summary-header">
+                <h1>Daily News Summary</h1>
+                <p class="subtitle text-muted">Click on any sentence to view its supporting sources</p>
+            </header>
+
             <div class="summary-text">
                 {% for citation in summary.citations.all %}<span
                     class="citable-sentence {% if citation.sources.count > 0 %}has-sources{% endif %}"

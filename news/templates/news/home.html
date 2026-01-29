@@ -1,6 +1,60 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Home - Fed Intelligence{% endblock %}
+{% block title %}Fed Intelligence - FOMC News Analysis{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
 
 {% block content %}
+<div class="home-container animate-fade-in">
+
+    <!-- Hero Section -->
+    <section class="hero-journal">
+        <div class="hero-content">
+            <h1 class="intro-text">
+                We summarize news about the FOMC meeting. In an era of rapid-fire financial cycles, clarity is the
+                ultimate currency.
+            </h1>
+            <p class="narrative-text">
+                Fed Intelligence leverages multi-agent systems to distill the relentless noise of global financial
+                reporting into precise, actionable narratives. By analyzing hawkish and dovish signals across hundreds
+                of reports, we provide a sophisticated viewpoint on the Federal Reserve's trajectory—bridging the gap
+                between raw data and executive insight.
+            </p>
+            <div class="cta-row">
+                <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-primary">Enter Report Box</a>
+                <a href="{% url 'multi_agent_systems:latest_summary' %}" class="btn btn-outline">Latest Summary</a>
+            </div>
+        </div>
+
+        <div class="hero-image-container">
+            <img src="{% static 'images/hero_fed.jpg' %}" alt="FOMC Press Conference" class="hero-image">
+        </div>
+    </section>
+
+    <!-- Feature Section -->
+    <section class="feature-section">
+        <h2>Pillars of Analysis</h2>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <h3>Consolidated Summaries</h3>
+                <p>Advanced DN-MAS pipelines synthesize daily news flows into high-fidelity summaries, ensuring no
+                    critical signal is lost in the noise.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Topic Intelligence</h3>
+                <p>Granular ST-MAS analysis dissects monetary policy into constituent topics, revealing the specific
+                    narratives driving market sentiment.</p>
+            </div>
+            <div class="feature-item">
+                <h3>Source Verifiability</h3>
+                <p>Every claim is backed by direct citations and supporting expertise, maintaining the highest standards
+                    of journalistic integrity.</p>
+            </div>
+        </div>
+    </section>
+
+</div>
 {% endblock %}

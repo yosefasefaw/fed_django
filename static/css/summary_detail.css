@@ -58,7 +58,10 @@
 }
 
 .summary-header {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
 }
 
 .summary-header h1 {
@@ -237,7 +240,7 @@
         position: fixed;
         right: 0;
         top: 80px;
-        width: 320px;
+        width: 500px;
         height: calc(100vh - 80px);
         max-height: none;
         border-radius: 0;

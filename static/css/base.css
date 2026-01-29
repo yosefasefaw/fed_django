@@ -27,6 +27,10 @@
     /* Typography - Spectral */
     --font-heading: 'Spectral', Georgia, 'Times New Roman', serif;
     --font-body: 'Spectral', Georgia, 'Times New Roman', serif;
+
+    /* Layout tokens */
+    --content-max-width: 1600px;
+    --content-padding: 1.5rem;
 }
 
 * {
@@ -89,9 +93,9 @@ a:hover {
 .main-content {
     flex: 1;
     width: 100%;
-    max-width: 1600px;
+    max-width: var(--content-max-width);
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 2rem var(--content-padding);
 }
 
 /* Navbar - Refined Editorial Style */
@@ -104,12 +108,12 @@ a:hover {
 }
 
 .nav-container {
-    max-width: 1600px;
+    max-width: var(--content-max-width);
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.5rem;
+    padding: 1rem var(--content-padding);
 }
 
 .nav-brand {
