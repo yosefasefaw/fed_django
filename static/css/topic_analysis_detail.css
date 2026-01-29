@@ -6,24 +6,93 @@
 
 .analysis-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     margin-bottom: 3rem;
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--border);
+    gap: 1rem;
 }
 
-.header-meta {
-    text-align: right;
-    font-size: 0.875rem;
+.header-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
     color: var(--text-muted);
+    margin-top: 1rem;
 }
 
-.header-meta .meta-label {
+.header-meta-row .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.header-meta-row .meta-label {
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     font-weight: 600;
-    margin-right: 0.5rem;
+}
+
+.header-meta-row .meta-value {
+    color: var(--text-main);
+}
+
+.header-meta-row .meta-divider {
+    color: var(--border);
+    font-weight: 300;
+}
+
+/* Nav Links as Meta Items */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+}
+
+.nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.nav-link.disabled {
+    color: var(--text-muted);
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.context-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.badge-pre {
+    background: #ebf8ff;
+    color: #2b6cb0;
+    border: 1px solid #bee3f8;
+}
+
+.badge-post {
+    background: #f0fff4;
+    color: #2f855a;
+    border: 1px solid #c6f6d5;
 }
 
 /* Three-Column Sentiment Layout */

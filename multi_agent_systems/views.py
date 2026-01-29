@@ -3,7 +3,7 @@ from django.views.generic import ListView, TemplateView, DetailView
 from django.views import View
 from itertools import chain
 from operator import attrgetter
-from .models import Summary, TopicAnalysisGroup
+from .models import Summary, TopicAnalysisGroup, TopicAnalysis
 
 
 class SummaryListView(ListView):
@@ -66,6 +66,15 @@ class TopicAnalysisGroupDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         group = self.object
 
+        # Navigation: Get previous and next groups based on created_at
+        context["prev_group"] = TopicAnalysisGroup.objects.filter(
+            created_at__lt=group.created_at
+        ).order_by("-created_at").first()
+        
+        context["next_group"] = TopicAnalysisGroup.objects.filter(
+            created_at__gt=group.created_at
+        ).order_by("created_at").first()
+
         # Sort all topics alphabetically first
         all_topics = sorted(list(group.topics.all()), key=lambda t: t.topic_name)
 
@@ -84,6 +93,58 @@ class TopicAnalysisGroupDetailView(DetailView):
 
     def get_queryset(self):
         return TopicAnalysisGroup.objects.prefetch_related("topics")
+
+
+class TopicDetailView(DetailView):
+    """Deep-dive view for a specific TopicAnalysis."""
+
+    model = TopicAnalysis
+    template_name = "multi_agent_systems/topic_detail.html"
+    context_object_name = "topic"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        topic = self.object
+
+        # Get all metrics and experts with citations prefetched
+        metrics = list(topic.metrics.all())
+        experts = list(topic.experts.all())
+
+        # Hero metrics: top 3 metrics for the stat-banner
+        context["hero_metrics"] = metrics[:3]
+
+        # Group metrics by stance
+        context["dovish_metrics"] = [
+            m for m in metrics if m.sentiment.lower() == "dovish"
+        ]
+        context["neutral_metrics"] = [
+            m for m in metrics if m.sentiment.lower() == "neutral"
+        ]
+        context["hawkish_metrics"] = [
+            m for m in metrics if m.sentiment.lower() == "hawkish"
+        ]
+
+        # Group experts by stance
+        context["dovish_experts"] = [
+            e for e in experts if e.sentiment.lower() == "dovish"
+        ]
+        context["neutral_experts"] = [
+            e for e in experts if e.sentiment.lower() == "neutral"
+        ]
+        context["hawkish_experts"] = [
+            e for e in experts if e.sentiment.lower() == "hawkish"
+        ]
+
+        return context
+
+    def get_queryset(self):
+        return TopicAnalysis.objects.prefetch_related(
+            "metrics",
+            "experts",
+            "summary_citations__sources",
+            "metrics__citations__sources",
+            "experts__citations__sources",
+        )
 
 
 class LatestTopicAnalysisRedirectView(View):

@@ -47,6 +47,12 @@ class Command(BaseCommand):
             action="store_true",
             help="Save the analysis collection to the database",
         )
+        parser.add_argument(
+            "--context",
+            type=str,
+            default="general",
+            help="Context for the analysis (pre_announcement, post_announcement, general)",
+        )
 
     def handle(self, *args, **options):
         days = options["days"]
@@ -124,6 +130,7 @@ class Command(BaseCommand):
                     collection=topic_analysis_collection,
                     articles_list=articles_list,
                     agent_name="test_st_mas",
+                    context=options.get("context", "general"),
                 )
                 self.stdout.write(
                     self.style.SUCCESS(f"✅ Saved Analysis Group: {group_obj.uuid}")

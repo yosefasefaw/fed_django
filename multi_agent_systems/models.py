@@ -128,6 +128,11 @@ class TopicAnalysisGroup(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     agent_name = models.TextField(default="st_mas")
+    context = models.CharField(
+        max_length=50,
+        default="general",
+        help_text="Analysis context: pre_announcement, post_announcement, general",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     # Articles used for this whole run

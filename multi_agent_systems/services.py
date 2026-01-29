@@ -72,13 +72,16 @@ def save_st_mas_collection(
     collection: TopicAnalysisCollection,
     articles_list: List[Article],
     agent_name: str = "st_mas",
+    context: str = "general",
 ) -> TopicAnalysisGroup:
     """
     Saves a collection of topic analyses (ST-MAS) to the database.
     """
     with transaction.atomic():
         # 1. Create the Group
-        group_obj = TopicAnalysisGroup.objects.create(agent_name=agent_name)
+        group_obj = TopicAnalysisGroup.objects.create(
+            agent_name=agent_name, context=context
+        )
         group_obj.articles_provided.set(articles_list)
 
         # 2. Process each Topic

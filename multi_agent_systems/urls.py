@@ -6,6 +6,7 @@ from .views import (
     LatestSummaryRedirectView,
     TopicAnalysisGroupDetailView,
     LatestTopicAnalysisRedirectView,
+    TopicDetailView,
 )
 
 app_name = "multi_agent_systems"
@@ -21,4 +22,5 @@ urlpatterns = [
         TopicAnalysisGroupDetailView.as_view(),
         name="topic_analysis_detail",
     ),
+    path("topic/<int:pk>/", TopicDetailView.as_view(), name="topic_detail"),
 ]
