@@ -1,0 +1,158 @@
+/* Topic Analysis - Three-Column Sentiment Layout */
+
+.analysis-container {
+    padding-top: 1rem;
+}
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.header-meta {
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.header-meta .meta-label {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+/* Three-Column Sentiment Layout */
+.sentiment-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.sentiment-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    min-height: 400px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.column-header {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid transparent;
+}
+
+.column-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.topic-card {
+    padding: 1.25rem 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left-width: 4px;
+    border-left-style: solid;
+    background: var(--bg-card);
+}
+
+.topic-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.topic-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.empty-column-text {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+    grid-column: span 2;
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .column-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Color Themes by Column */
+
+/* Dovish - Elegant Emerald Green */
+.sentiment-column.dove {
+    border-top: 4px solid #2f855a;
+    background-color: #f0fff4;
+}
+
+.dove .column-header {
+    color: #22543d;
+    border-bottom-color: rgba(47, 133, 90, 0.2);
+}
+
+.dove .topic-card {
+    border-left-color: #2f855a;
+}
+
+/* Neutral - High Contrast Black */
+.sentiment-column.neutral {
+    border-top: 4px solid #1a202c;
+    background-color: #f7fafc;
+}
+
+.neutral .column-header {
+    color: #000000;
+    border-bottom-color: rgba(26, 32, 44, 0.2);
+}
+
+.neutral .topic-card {
+    border-left-color: #1a202c;
+}
+
+/* Hawkish - Antique Gold / Bronze */
+.sentiment-column.hawk {
+    border-top: 4px solid #b7791f;
+    background-color: #fffaf3;
+}
+
+.hawk .column-header {
+    color: #744210;
+    border-bottom-color: rgba(183, 121, 31, 0.2);
+}
+
+.hawk .topic-card {
+    border-left-color: #b7791f;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .sentiment-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .sentiment-column {
+        min-height: auto;
+    }
+}

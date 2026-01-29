@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}No Topic Analysis Found - Fed Intelligence{% endblock %}
+
+{% block content %}
+<div class="empty-state-page animate-fade-in">
+    <div class="empty-card card">
+        <div class="empty-icon">📊</div>
+        <h2>No Topic Analysis Found</h2>
+        <p class="text-muted">There are currenty no Topic Analysis groups processed by the ST-MAS pipeline. You can
+            generate a new analysis from the research dashboard.</p>
+        <div class="empty-actions">
+            <a href="{% url 'news:home' %}" class="btn btn-primary">Go to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .empty-state-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+
+    .empty-card {
+        max-width: 500px;
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-card h2 {
+        margin-bottom: 1rem;
+    }
+
+    .empty-card p {
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}

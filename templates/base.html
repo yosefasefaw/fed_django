@@ -40,7 +40,8 @@
                         Box</a>
                     <a href="{% url 'multi_agent_systems:latest_summary' %}"
                         class="nav-link {% if request.resolver_match.url_name == 'summary_detail' or request.resolver_match.url_name == 'latest_summary' %}active{% endif %}">Summary</a>
-                    <a href="#" class="nav-link disabled">Topic Analysis</a>
+                    <a href="{% url 'multi_agent_systems:latest_analysis' %}"
+                        class="nav-link {% if 'analysis' in request.path %}active{% endif %}">Topic Analysis</a>
                 </div>
             </div>
         </nav>

@@ -28,9 +28,9 @@
             </thead>
             <tbody>
                 {% for report in reports %}
-                <tr class="clickable-row" {% if report.report_type == "summary" %}
-                    data-href="{% url 'multi_agent_systems:summary_detail' uuid=report.uuid %}" {% else %} data-href="#"
-                    {% endif %}>
+                <tr class="clickable-row" {% if report.report_type == "summary" %} 
+                    data-href="{% url 'multi_agent_systems:summary_detail' uuid=report.uuid %}" {% else %}
+                    data-href="{% url 'multi_agent_systems:topic_analysis_detail' uuid=report.uuid %}" {% endif %}>
                     <td class="date-cell">{{ report.created_at|date:"Y-m-d H:i" }}</td>
                     <td>
                         {% if report.report_type == "summary" %}

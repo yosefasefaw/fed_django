@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Topic Analysis Detail - Fed Intelligence{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/topic_analysis_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analysis-container animate-fade-in">
+    <header class="analysis-header">
+        <div class="header-main">
+            <h1 class="page-title">Topic Analysis Overview</h1>
+            <p class="subtitle text-muted">Comparative sentiment analysis across key monetary policy sectors</p>
+        </div>
+        <div class="header-meta">
+            <div>
+                <span class="meta-label">Generated</span>
+                <span class="meta-value">{{ group.created_at|date:"M d, Y" }}</span>
+            </div>
+            <div>
+                <span class="meta-label">Sources</span>
+                <span class="meta-value">{{ group.articles_provided.count }} articles</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="sentiment-layout">
+        <!-- Dovish Column -->
+        <div class="sentiment-column dove">
+            <h2 class="column-header">Dovish</h2>
+            <div class="column-grid">
+                {% for topic in dovish_topics %}
+                <div class="topic-card card">
+                    <div class="topic-title">
+                        <span>{{ topic.topic_name }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="empty-column-text">No dovish topics</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Neutral Column -->
+        <div class="sentiment-column neutral">
+            <h2 class="column-header">Neutral</h2>
+            <div class="column-grid">
+                {% for topic in neutral_topics %}
+                <div class="topic-card card">
+                    <div class="topic-title">
+                        <span>{{ topic.topic_name }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="empty-column-text">No neutral topics</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Hawkish Column -->
+        <div class="sentiment-column hawk">
+            <h2 class="column-header">Hawkish</h2>
+            <div class="column-grid">
+                {% for topic in hawkish_topics %}
+                <div class="topic-card card">
+                    <div class="topic-title">
+                        <span>{{ topic.topic_name }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="empty-column-text">No hawkish topics</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
