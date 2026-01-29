@@ -22,8 +22,39 @@ import asyncio
 class Command(BaseCommand):
     help = "Test scheduler command triggering both DN-MAS and ST-MAS pipelines"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--context",
+            type=str,
+            default="general",
+            help="Context for the analysis (pre_announcement, post_announcement, general)",
+        )
+        parser.add_argument(
+            "--fomc-time",
+            "--fomc",
+            type=str,
+            default=None,
+            help="FOMC announcement datetime (e.g., '2025-12-18 14:00')",
+        )
+        parser.add_argument(
+            "--days",
+            type=int,
+            default=1,
+            help="Number of days of articles to analyze",
+        )
+        parser.add_argument(
+            "--limit",
+            type=int,
+            default=5,
+            help="Maximum number of articles to process",
+        )
+
     def handle(self, *args, **options):
         now = timezone.now()
+        context_str = options["context"]
+        fomc_time = options["fomc_time"]
+        days = options["days"]
+        limit = options["limit"]
 
         # Call the MOCK utility function for testing!
         is_critical = is_in_mock_critical_window(now)
@@ -64,12 +95,13 @@ class Command(BaseCommand):
                 time.sleep(2)
 
                 # Retrieve articles for agent
-                start_date = now - timedelta(days=1)
+                start_date = now - timedelta(days=days)
                 end_date = now
-                limit = 5
 
                 articles_qs = get_articles_from_db(start_date, end_date)
                 articles_list = list(articles_qs[:limit])
+
+                self.stdout.write(f"   ∟ Agent Query: Found {len(articles_list)} articles in DB for range {start_date.date()} to {end_date.date()}")
 
                 if articles_list:
                     # Shared Prep
@@ -104,6 +136,8 @@ class Command(BaseCommand):
                             start_date=start_date,
                             end_date=end_date,
                             agent_name="scheduler",
+                            context=context_str,
+                            fomc_announcement_datetime=fomc_time,
                         )
                         self.stdout.write(
                             self.style.SUCCESS(
@@ -128,6 +162,8 @@ class Command(BaseCommand):
                         collection=topic_collection,
                         articles_list=articles_list,
                         agent_name="scheduler",
+                        context=context_str,
+                        fomc_announcement_datetime=fomc_time,
                     )
                     self.stdout.write(
                         self.style.SUCCESS(

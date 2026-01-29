@@ -19,6 +19,22 @@
                 <span class="type-badge type-summary">DN-MAS</span>
             </div>
             <div class="info-item">
+                <span class="info-label">Focus</span>
+                <span class="info-value" style="color: var(--primary); font-weight: 600;">{{ timing_focus }}</span>
+            </div>
+            {% if timing_delta %}
+            <div class="info-item">
+                <span class="info-label">Delta</span>
+                <span class="info-value" style="color: var(--primary); font-weight: 600;">{{ timing_delta }}</span>
+            </div>
+            {% endif %}
+            {% if summary.fomc_announcement_datetime %}
+            <div class="info-item">
+                <span class="info-label">FOMC Focus</span>
+                <span class="info-value">{{ summary.fomc_announcement_datetime|date:"M j, Y H:i" }}</span>
+            </div>
+            {% endif %}
+            <div class="info-item">
                 <span class="info-label">Generated</span>
                 <span class="info-value">{{ summary.created_at|date:"M j, Y" }}</span>
             </div>
@@ -38,8 +54,60 @@
 
         <div class="sidebar-section">
             <h4>Navigation</h4>
-            <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-outline btn-full">← Report Box</a>
+            <div class="sidebar-nav-v">
+                <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-outline btn-full">← Report Box</a>
+
+                <div class="nav-sequential">
+                    {% if prev_summary %}
+                    <a href="{% url 'multi_agent_systems:summary_detail' uuid=prev_summary.uuid %}" class="nav-mini-btn"
+                        title="Previous Summary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="m15 18-6-6 6-6" />
+                        </svg>
+                        Prev
+                    </a>
+                    {% else %}
+                    <span class="nav-mini-btn disabled">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="m15 18-6-6 6-6" />
+                        </svg>
+                        Prev
+                    </span>
+                    {% endif %}
+
+                    {% if next_summary %}
+                    <a href="{% url 'multi_agent_systems:summary_detail' uuid=next_summary.uuid %}" class="nav-mini-btn"
+                        title="Next Summary">
+                        Next
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
+                    </a>
+                    {% else %}
+                    <span class="nav-mini-btn disabled">
+                        Next
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
         </div>
+
+        {% if not next_summary %}
+        <div class="sidebar-section next-update-sidebar">
+            <h4>Scheduled</h4>
+            <div class="info-item">
+                <span class="info-label">Next</span>
+                <span class="info-value">Daily at 8:00 AM</span>
+            </div>
+        </div>
+        {% endif %}
     </aside>
 
     <!-- Main Content -->

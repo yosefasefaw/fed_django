@@ -25,6 +25,14 @@ class Summary(models.Model):
     # Agent info
     agent_name = models.TextField(default="dn_mas")
 
+    # FOMC Context
+    context = models.CharField(
+        max_length=50,
+        default="general",
+        help_text="Analysis context: pre_announcement, post_announcement, general",
+    )
+    fomc_announcement_datetime = models.DateTimeField(null=True, blank=True)
+
     # All articles provided to the agent (input)
     articles_provided = models.ManyToManyField(
         Article,
@@ -59,6 +67,48 @@ class Summary(models.Model):
     @property
     def articles_used_count(self):
         return self.articles_used.count()
+
+    def get_relative_timing_string(self):
+        focus = self.get_timing_focus
+        delta = self.get_timing_delta
+        if not delta:
+            return focus
+        return f"{delta} {focus}"
+
+    @property
+    def get_timing_focus(self):
+        if not self.fomc_announcement_datetime:
+            return self.context.replace("_", " ").lower().replace(" ", "-") if self.context else "general"
+        diff = self.created_at - self.fomc_announcement_datetime
+        return "post-fomc-announcement" if diff.total_seconds() >= 0 else "pre-fomc-announcement"
+
+    @property
+    def get_timing_delta(self):
+        if not self.fomc_announcement_datetime:
+            return None
+        diff = self.created_at - self.fomc_announcement_datetime
+        is_post = diff.total_seconds() >= 0
+        abs_diff = abs(diff)
+
+        days = abs_diff.days
+        hours = abs_diff.seconds // 3600
+        minutes = (abs_diff.seconds % 3600) // 60
+
+        parts = []
+        if days > 0:
+            parts.append(f"{days} day{'s' if days > 1 else ''}")
+        if hours > 0:
+            parts.append(f"{hours} hour{'s' if hours > 1 else ''}")
+        if minutes > 0 or not parts:
+            parts.append(f"{minutes} minute{'s' if minutes > 1 else ''}")
+
+        sign = "+" if is_post else "-"
+        if len(parts) > 1:
+            time_str = f"{parts[0]} and {parts[1]}"
+        else:
+            time_str = parts[0]
+
+        return f"{sign} {time_str}"
 
 
 class Citation(models.Model):
@@ -134,6 +184,7 @@ class TopicAnalysisGroup(models.Model):
         help_text="Analysis context: pre_announcement, post_announcement, general",
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    fomc_announcement_datetime = models.DateTimeField(null=True, blank=True)
 
     # Articles used for this whole run
     articles_provided = models.ManyToManyField(
@@ -146,6 +197,48 @@ class TopicAnalysisGroup(models.Model):
 
     def __str__(self):
         return f"Analysis Group {self.uuid} ({self.created_at.strftime('%Y-%m-%d')})"
+
+    def get_relative_timing_string(self):
+        focus = self.get_timing_focus
+        delta = self.get_timing_delta
+        if not delta:
+            return focus
+        return f"{delta} {focus}"
+
+    @property
+    def get_timing_focus(self):
+        if not self.fomc_announcement_datetime:
+            return self.context.replace("_", " ").lower().replace(" ", "-") if self.context else "general"
+        diff = self.created_at - self.fomc_announcement_datetime
+        return "post-fomc-announcement" if diff.total_seconds() >= 0 else "pre-fomc-announcement"
+
+    @property
+    def get_timing_delta(self):
+        if not self.fomc_announcement_datetime:
+            return None
+        diff = self.created_at - self.fomc_announcement_datetime
+        is_post = diff.total_seconds() >= 0
+        abs_diff = abs(diff)
+
+        days = abs_diff.days
+        hours = abs_diff.seconds // 3600
+        minutes = (abs_diff.seconds % 3600) // 60
+
+        parts = []
+        if days > 0:
+            parts.append(f"{days} day{'s' if days > 1 else ''}")
+        if hours > 0:
+            parts.append(f"{hours} hour{'s' if hours > 1 else ''}")
+        if minutes > 0 or not parts:
+            parts.append(f"{minutes} minute{'s' if minutes > 1 else ''}")
+
+        sign = "+" if is_post else "-"
+        if len(parts) > 1:
+            time_str = f"{parts[0]} and {parts[1]}"
+        else:
+            time_str = parts[0]
+
+        return f"{sign} {time_str}"
 
 
 class TopicAnalysis(models.Model):

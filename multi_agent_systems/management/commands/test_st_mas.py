@@ -53,12 +53,28 @@ class Command(BaseCommand):
             default="general",
             help="Context for the analysis (pre_announcement, post_announcement, general)",
         )
+        parser.add_argument(
+            "--fomc-time",
+            "--fomc",
+            type=str,
+            default=None,
+            help="FOMC announcement datetime (e.g., '2025-12-18 14:00')",
+        )
 
     def handle(self, *args, **options):
         days = options["days"]
         filter_sources = options["filter_sources"]
         limit = options["limit"]
         save_to_db = options["save"]
+        fomc_time_str = options["fomc_time"]
+
+        fomc_time = None
+        if fomc_time_str:
+            from django.utils.dateparse import parse_datetime
+
+            fomc_time = parse_datetime(fomc_time_str)
+            if fomc_time and timezone.is_naive(fomc_time):
+                fomc_time = timezone.make_aware(fomc_time)
 
         self.stdout.write(self.style.HTTP_INFO("=" * 50))
         self.stdout.write(self.style.HTTP_INFO("🧪 ST-MAS Pipeline Test"))
@@ -70,7 +86,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f"\n📅 Date range: {start_date.date()} to {end_date.date()}")
 
-        articles_qs = get_articles_from_db(start_date, end_date, filter_sources)
+        articles_qs = get_articles_from_db(start_date, end_date, filter_sources).order_by("published_at")
         articles_list = list(articles_qs[:limit])
 
         if not articles_list:
@@ -131,6 +147,7 @@ class Command(BaseCommand):
                     articles_list=articles_list,
                     agent_name="test_st_mas",
                     context=options.get("context", "general"),
+                    fomc_announcement_datetime=fomc_time,
                 )
                 self.stdout.write(
                     self.style.SUCCESS(f"✅ Saved Analysis Group: {group_obj.uuid}")

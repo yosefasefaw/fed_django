@@ -35,15 +35,26 @@
 
             <span class="meta-divider">•</span>
 
-            <!-- Context Badge (Only if pre or post) -->
-            {% if group.context == 'pre_announcement' %}
             <div class="meta-item">
-                <span class="context-badge badge-pre">Pre-Announcement</span>
+                <span
+                    class="context-badge {% if 'pre' in timing_focus %}badge-pre{% elif 'post' in timing_focus %}badge-post{% endif %}">
+                    {{ timing_focus }}
+                </span>
             </div>
             <span class="meta-divider">•</span>
-            {% elif group.context == 'post_announcement' %}
+
+            {% if timing_delta %}
             <div class="meta-item">
-                <span class="context-badge badge-post">Post-Announcement</span>
+                <span class="meta-label">Delta</span>
+                <span class="meta-value" style="color: var(--primary); font-weight: 600;">{{ timing_delta }}</span>
+            </div>
+            <span class="meta-divider">•</span>
+            {% endif %}
+
+            {% if group.fomc_announcement_datetime %}
+            <div class="meta-item">
+                <span class="meta-label">FOMC Focus</span>
+                <span class="meta-value">{{ group.fomc_announcement_datetime|date:"M j, H:i" }}</span>
             </div>
             <span class="meta-divider">•</span>
             {% endif %}

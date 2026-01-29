@@ -22,11 +22,24 @@ def save_dn_mas_summary(
     start_date=None,
     end_date=None,
     agent_name: str = "dn_mas",
+    context: str = "general",
+    fomc_announcement_datetime=None,
 ) -> Summary:
     """
     Saves a DN-MAS summary and its citations to the database.
     Uses a transaction to ensure atomicity.
     """
+    if fomc_announcement_datetime and isinstance(fomc_announcement_datetime, str):
+        from django.utils.dateparse import parse_datetime
+        from django.utils import timezone
+        fomc_announcement_datetime = parse_datetime(fomc_announcement_datetime)
+        if fomc_announcement_datetime and timezone.is_naive(fomc_announcement_datetime):
+            fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
+    elif fomc_announcement_datetime and hasattr(fomc_announcement_datetime, 'hour'):
+        from django.utils import timezone
+        if timezone.is_naive(fomc_announcement_datetime):
+            fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
+
     with transaction.atomic():
         # 1. Create the parent Summary object
         summary_obj = Summary.objects.create(
@@ -35,6 +48,8 @@ def save_dn_mas_summary(
             date_range_start=start_date,
             date_range_end=end_date,
             agent_name=agent_name,
+            context=context,
+            fomc_announcement_datetime=fomc_announcement_datetime,
         )
 
         # 2. Link all Articles provided to the agent
@@ -73,14 +88,28 @@ def save_st_mas_collection(
     articles_list: List[Article],
     agent_name: str = "st_mas",
     context: str = "general",
+    fomc_announcement_datetime=None,
 ) -> TopicAnalysisGroup:
     """
     Saves a collection of topic analyses (ST-MAS) to the database.
     """
+    if fomc_announcement_datetime and isinstance(fomc_announcement_datetime, str):
+        from django.utils.dateparse import parse_datetime
+        from django.utils import timezone
+        fomc_announcement_datetime = parse_datetime(fomc_announcement_datetime)
+        if fomc_announcement_datetime and timezone.is_naive(fomc_announcement_datetime):
+            fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
+    elif fomc_announcement_datetime and hasattr(fomc_announcement_datetime, 'hour'):
+        from django.utils import timezone
+        if timezone.is_naive(fomc_announcement_datetime):
+            fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
+
     with transaction.atomic():
         # 1. Create the Group
         group_obj = TopicAnalysisGroup.objects.create(
-            agent_name=agent_name, context=context
+            agent_name=agent_name,
+            context=context,
+            fomc_announcement_datetime=fomc_announcement_datetime,
         )
         group_obj.articles_provided.set(articles_list)
 

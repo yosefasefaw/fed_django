@@ -49,6 +49,25 @@ class SummaryDetailView(DetailView):
     slug_field = "uuid"
     slug_url_kwarg = "uuid"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        summary = self.object
+
+        # Navigation: Get previous and next summaries based on created_at
+        context["prev_summary"] = Summary.objects.filter(
+            created_at__lt=summary.created_at
+        ).order_by("-created_at").first()
+
+        context["next_summary"] = Summary.objects.filter(
+            created_at__gt=summary.created_at
+        ).order_by("created_at").first()
+
+        # FOMC Timing Context
+        context["timing_focus"] = summary.get_timing_focus
+        context["timing_delta"] = summary.get_timing_delta
+
+        return context
+
     def get_queryset(self):
         return Summary.objects.prefetch_related("citations__sources")
 
@@ -74,6 +93,10 @@ class TopicAnalysisGroupDetailView(DetailView):
         context["next_group"] = TopicAnalysisGroup.objects.filter(
             created_at__gt=group.created_at
         ).order_by("created_at").first()
+
+        # FOMC Timing Context
+        context["timing_focus"] = group.get_timing_focus
+        context["timing_delta"] = group.get_timing_delta
 
         # Sort all topics alphabetically first
         all_topics = sorted(list(group.topics.all()), key=lambda t: t.topic_name)

@@ -41,6 +41,7 @@ def create_payload(
         "action": "getArticles",
         "query": {
             "$query": {
+                "lang": "eng",
                 "$and": [
                     {
                         "$or": [
