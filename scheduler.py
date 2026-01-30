@@ -83,14 +83,21 @@ def run_scheduler(mock_now=None):
                       should_run_daily = True
             
             if should_run_daily:
+                from news.utils import get_closest_fomc_meeting
+                closest_meeting, context = get_closest_fomc_meeting(now)
+                
+                fomc_str = closest_meeting.strftime("%Y-%m-%d %H:%M") if closest_meeting else None
                 now_str = now.strftime("%Y-%m-%d %H:%M")
+                
                 print(f"\n☀️ [DAILY MODE] Running Scheduler at {now} (UTC)...")
+                print(f"   Context: {context} (Closest FOMC: {fomc_str})")
                 try:
                     call_command(
                         "test_scheduler", 
                         hours=24, 
-                        context="general",
-                        now=now_str
+                        context=context,
+                        now=now_str,
+                        fomc_time=fomc_str 
                     )
                 except Exception as e:
                      print(f"Error running command: {e}")

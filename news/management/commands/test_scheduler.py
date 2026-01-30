@@ -57,13 +57,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "--articles-count",
             type=int,
-            default=10,
+            default=100,
             help="Number of articles to fetch and analyze",
         )
         parser.add_argument(
             "--page-numbers",
             type=int,
-            default=1,
+            default=2,
             help="Number of pages to fetch and analyze",
         )
 
@@ -92,19 +92,19 @@ class Command(BaseCommand):
         try:
             # 1. Fetching news (using unified start_date)
             # Note: retrieve_articles expects start/end dates
-            # articles = retrieve_articles(
-            #     date_start=start_date,
-            #     date_end=now,
-            #     articles_count=articles_count,
-            #     page_numbers=page_numbers,
-            # )
-            # new_saved, updated = save_articles(articles)
+            articles = retrieve_articles(
+                date_start=start_date,
+                date_end=now,
+                articles_count=articles_count,
+                page_numbers=page_numbers,
+            )
+            new_saved, updated = save_articles(articles)
 
-            # self.stdout.write(
-            #     self.style.MIGRATE_LABEL(
-            #         f"   ∟ Data Sync Complete: {new_saved} new, {updated} updated."
-            #     )
-            # )
+            self.stdout.write(
+                self.style.MIGRATE_LABEL(
+                    f"   ∟ Data Sync Complete: {new_saved} new, {updated} updated."
+                )
+            )
 
             # 2. Pipeline Trigger (Wait for DB to settle)
             time.sleep(10)

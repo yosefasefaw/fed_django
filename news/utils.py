@@ -61,3 +61,36 @@ def update_next_run_time(last_run_critical, last_run_daily, is_critical):
             defaults={"value": next_run.isoformat()}
         )
         print(f"   🔮 Next Scheduled Run: {next_run.strftime('%Y-%m-%d %H:%M UTC')}")
+
+
+def get_closest_fomc_meeting(now=None):
+    """
+    Finds the closest FOMC meeting to the given time.
+    Returns (meeting_datetime, "pre_announcement"|"post_announcement")
+    """
+    if now is None:
+        now = timezone.now()
+
+    closest_meeting = None
+    min_diff = None
+
+    for meeting_date in FOMC_CALENDAR:
+        # Ensure meeting_date is aware
+        if timezone.is_naive(meeting_date):
+            aware_meeting = timezone.make_aware(meeting_date, datetime.timezone.utc)
+        else:
+            aware_meeting = meeting_date
+
+        diff = abs((aware_meeting - now).total_seconds())
+
+        if min_diff is None or diff < min_diff:
+            min_diff = diff
+            closest_meeting = aware_meeting
+
+    if closest_meeting:
+        if now < closest_meeting:
+            return closest_meeting, "pre_announcement"
+        else:
+            return closest_meeting, "post_announcement"
+    
+    return None, "general"

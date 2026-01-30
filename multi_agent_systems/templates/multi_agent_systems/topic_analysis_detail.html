@@ -72,7 +72,13 @@
             <span class="meta-divider">•</span>
             <div class="meta-item">
                 <span class="meta-label">Next Update</span>
-                <span class="meta-value">Daily at 8:00 AM</span>
+                <span class="meta-value">
+                    {% if next_run %}
+                    {{ next_run|date:"M j, H:i" }}
+                    {% else %}
+                    Daily at 8:00 AM
+                    {% endif %}
+                </span>
             </div>
             {% endif %}
 

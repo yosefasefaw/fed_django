@@ -43,7 +43,7 @@
         <div class="sidebar-section">
             <h4>Navigation</h4>
             <div class="sidebar-nav-v">
-                <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-outline btn-full">← Report Box</a>
+                <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-outline btn-full"> Report Box</a>
 
                 <div class="nav-sequential">
                     {% if prev_summary %}
@@ -92,7 +92,13 @@
             <h4>Scheduled</h4>
             <div class="info-item">
                 <span class="info-label">Next</span>
-                <span class="info-value">Daily at 8:00 AM</span>
+                <span class="info-value">
+                    {% if next_run %}
+                    {{ next_run|date:"M j, H:i" }}
+                    {% else %}
+                    Daily at 8:00 AM
+                    {% endif %}
+                </span>
             </div>
         </div>
         {% endif %}

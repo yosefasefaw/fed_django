@@ -79,7 +79,18 @@ class SummaryDetailView(DetailView):
 
         # FOMC Timing Context
         context["timing_focus"] = summary.get_timing_focus
+        context["timing_focus"] = summary.get_timing_focus
         context["timing_delta"] = summary.get_timing_delta
+
+        # Add next scheduled run info
+        from .models import SystemMetadata
+        from datetime import datetime
+        try:
+            meta = SystemMetadata.objects.get(key="next_scheduled_run")
+            if meta.value:
+                context["next_run"] = datetime.fromisoformat(meta.value)
+        except (SystemMetadata.DoesNotExist, ValueError):
+            context["next_run"] = None
 
         return context
 
@@ -130,6 +141,17 @@ class TopicAnalysisGroupDetailView(DetailView):
         context["hawkish_topics"] = [
             t for t in all_topics if t.sentiment.lower() == "hawkish"
         ]
+
+        # Add next scheduled run info
+        from .models import SystemMetadata
+        from datetime import datetime
+        try:
+            meta = SystemMetadata.objects.get(key="next_scheduled_run")
+            if meta.value:
+                context["next_run"] = datetime.fromisoformat(meta.value)
+        except (SystemMetadata.DoesNotExist, ValueError):
+            context["next_run"] = None
+
 
         return context
 
