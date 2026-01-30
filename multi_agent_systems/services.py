@@ -24,6 +24,7 @@ def save_dn_mas_summary(
     agent_name: str = "dn_mas",
     context: str = "general",
     fomc_announcement_datetime=None,
+    created_at=None,
 ) -> Summary:
     """
     Saves a DN-MAS summary and its citations to the database.
@@ -52,6 +53,7 @@ def save_dn_mas_summary(
             agent_name=agent_name,
             context=context,
             fomc_announcement_datetime=fomc_announcement_datetime,
+            created_at=created_at if created_at else timezone.now(),
         )
 
         # 2. Link all Articles provided to the agent
@@ -91,6 +93,7 @@ def save_st_mas_collection(
     agent_name: str = "st_mas",
     context: str = "general",
     fomc_announcement_datetime=None,
+    created_at=None,
 ) -> TopicAnalysisGroup:
     """
     Saves a collection of topic analyses (ST-MAS) to the database.
@@ -114,6 +117,7 @@ def save_st_mas_collection(
             agent_name=agent_name,
             context=context,
             fomc_announcement_datetime=fomc_announcement_datetime,
+            created_at=created_at if created_at else timezone.now(),
         )
         group_obj.articles_provided.set(articles_list)
 

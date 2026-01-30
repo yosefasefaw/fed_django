@@ -37,6 +37,17 @@ class ReportBoxView(TemplateView):
         )[:20]  # Limit to 20 most recent
 
         context["reports"] = combined
+        
+        # Add next scheduled run info
+        from .models import SystemMetadata
+        from datetime import datetime
+        try:
+            meta = SystemMetadata.objects.get(key="next_scheduled_run")
+            if meta.value:
+                context["next_run"] = datetime.fromisoformat(meta.value)
+        except (SystemMetadata.DoesNotExist, ValueError):
+            context["next_run"] = None
+            
         return context
 
 

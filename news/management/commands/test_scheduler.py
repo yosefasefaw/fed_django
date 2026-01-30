@@ -1,8 +1,8 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone as dt_timezone
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from news.models import FetchLog
-from news.utils import is_in_mock_critical_window
+from news.utils import  is_in_fomc_critical_window
 from news.services import retrieve_articles, save_articles
 import time
 from news.selectors import get_articles_from_db
@@ -37,153 +37,167 @@ class Command(BaseCommand):
             help="FOMC announcement datetime (e.g., '2025-12-18 14:00')",
         )
         parser.add_argument(
-            "--days",
+            "--hours",
             type=int,
-            default=1,
-            help="Number of days of articles to analyze",
+            default=24,
+            help="Number of hours of articles to fetch and analyze",
         )
         parser.add_argument(
             "--limit",
             type=int,
-            default=5,
+            default=2,
             help="Maximum number of articles to process",
+        )
+        parser.add_argument(
+            "--now",
+            type=str,
+            default=None,
+            help="Override current time (e.g., '2025-12-18 14:00')",
+        )
+        parser.add_argument(
+            "--articles-count",
+            type=int,
+            default=10,
+            help="Number of articles to fetch and analyze",
+        )
+        parser.add_argument(
+            "--page-numbers",
+            type=int,
+            default=1,
+            help="Number of pages to fetch and analyze",
         )
 
     def handle(self, *args, **options):
-        now = timezone.now()
+        # Time setup
+        if options["now"]:
+            fmt = "%Y-%m-%d %H:%M"
+            dt = datetime.strptime(options["now"], fmt)
+            now = timezone.make_aware(dt, dt_timezone.utc)
+        else:
+            now = timezone.now()
+
         context_str = options["context"]
         fomc_time = options["fomc_time"]
-        days = options["days"]
+        hours = options["hours"]
         limit = options["limit"]
+        articles_count = options["articles_count"]
+        page_numbers = options["page_numbers"]
+        msg = f"RUNNING: Manual/Scheduler Trigger at {now.strftime('%H:%M:%S')}"
+        self.stdout.write(self.style.SUCCESS(msg))
 
-        # Call the MOCK utility function for testing!
-        is_critical = is_in_mock_critical_window(now)
+        # Calculate unified start time
+        start_date = now - timedelta(hours=hours)
 
-        should_run = False
-        reason = ""
+        # Fetch and Save News
+        try:
+            # 1. Fetching news (using unified start_date)
+            # Note: retrieve_articles expects start/end dates
+            # articles = retrieve_articles(
+            #     date_start=start_date,
+            #     date_end=now,
+            #     articles_count=articles_count,
+            #     page_numbers=page_numbers,
+            # )
+            # new_saved, updated = save_articles(articles)
 
-        if is_critical:
-            # During mock "critical" window, we run every time we are called
-            should_run = True
-            reason = "Inside MOCK critical minute (5-min interval)"
-        else:
-            # Outside critical window: Only run if it's an even minute (for testing)
-            if now.minute % 2 == 0:
-                should_run = True
-                reason = "Normal test interval (Even minute)"
+            # self.stdout.write(
+            #     self.style.MIGRATE_LABEL(
+            #         f"   ∟ Data Sync Complete: {new_saved} new, {updated} updated."
+            #     )
+            # )
 
-        if should_run:
-            msg = f"RUNNING: {reason} at {now.strftime('%H:%M:%S')}"
-            self.stdout.write(self.style.SUCCESS(msg))
+            # 2. Pipeline Trigger (Wait for DB to settle)
+            time.sleep(10)
 
-            # Fetch and Save News
-            try:
-                # 1. Fetching news
-                date_start = now - timedelta(hours=1)
-                articles = retrieve_articles(
-                    date_start=date_start, date_end=now, articles_count=5
-                )
-                new_saved, updated = save_articles(articles)
+            # Retrieve articles for agent (using SAME unified start_date)
+            # articles_qs = get_articles_from_db(start_date, end_date) -> end_date is now
+            end_date = now
+            db_lookup_start_time = end_date-timedelta(hours=10)
+            articles_qs = get_articles_from_db(db_lookup_start_time, end_date)
+            articles_list = list(articles_qs[:limit])
 
+            self.stdout.write(
+                f"   ∟ Agent Query: Found {len(articles_list)} articles in DB for range {db_lookup_start_time.strftime('%Y-%m-%d %H:%M')} to {now.strftime('%Y-%m-%d %H:%M')}"
+            )
+
+            if articles_list:
+                # Shared Prep
+                formatted = format_articles_for_agent(articles_list)
+                metadata_list = formatted.get_metadata_list()
+                idx_to_metadata = create_idx_to_metadata_map(metadata_list)
+
+                initial_state = {
+                    "articles": formatted.to_llm_dict(),
+                    "context": f"Automated scheduler run at {now.strftime('%Y-%m-%d %H:%M')}",
+                }
+
+                # --- RUN DN-MAS ---
                 self.stdout.write(
-                    self.style.MIGRATE_LABEL(
-                        f"   ∟ Data Sync Complete: {new_saved} new, {updated} updated."
+                    self.style.SUCCESS(
+                        f"   ∟ Triggering DN-MAS with {len(articles_list)} articles..."
                     )
                 )
+                dn_final_state = asyncio.run(dn_mas_runner(initial_state))
 
-                # 2. Pipeline Trigger (Wait for DB to settle)
-                time.sleep(2)
-
-                # Retrieve articles for agent
-                start_date = now - timedelta(days=days)
-                end_date = now
-
-                articles_qs = get_articles_from_db(start_date, end_date)
-                articles_list = list(articles_qs[:limit])
-
-                self.stdout.write(
-                    f"   ∟ Agent Query: Found {len(articles_list)} articles in DB for range {start_date.date()} to {end_date.date()}"
-                )
-
-                if articles_list:
-                    # Shared Prep
-                    formatted = format_articles_for_agent(articles_list)
-                    metadata_list = formatted.get_metadata_list()
-                    idx_to_metadata = create_idx_to_metadata_map(metadata_list)
-
-                    initial_state = {
-                        "articles": formatted.to_llm_dict(),
-                        "context": f"Automated scheduler run at {now.strftime('%Y-%m-%d %H:%M')}",
-                    }
-
-                    # --- RUN DN-MAS ---
-                    self.stdout.write(
-                        self.style.SUCCESS(
-                            f"   ∟ Triggering DN-MAS with {len(articles_list)} articles..."
-                        )
+                if "summary_with_citations" in dn_final_state:
+                    raw_result = SummaryWithCitations(
+                        **dn_final_state["summary_with_citations"]
                     )
-                    dn_final_state = asyncio.run(dn_mas_runner(initial_state))
-
-                    if "summary_with_citations" in dn_final_state:
-                        raw_result = SummaryWithCitations(
-                            **dn_final_state["summary_with_citations"]
-                        )
-                        enriched_summary = enrich_summary_to_app_model(
-                            raw_result, idx_to_metadata
-                        )
-
-                        summary_obj = save_dn_mas_summary(
-                            enriched_summary=enriched_summary,
-                            articles_list=articles_list,
-                            start_date=start_date,
-                            end_date=end_date,
-                            agent_name="scheduler",
-                            context=context_str,
-                            fomc_announcement_datetime=fomc_time,
-                        )
-                        self.stdout.write(
-                            self.style.SUCCESS(
-                                f"     ✅ DN-MAS Complete: Saved Summary {summary_obj.uuid}"
-                            )
-                        )
-
-                    # --- RUN ST-MAS ---
-                    self.stdout.write(
-                        self.style.SUCCESS(
-                            f"   ∟ Triggering ST-MAS (Parallel Topics)..."
-                        )
-                    )
-                    st_final_state = asyncio.run(st_mas_runner(initial_state))
-
-                    # Convert labels to metadata
-                    topic_collection = convert_topic_analysis_indexes_to_uuids(
-                        llm_output=st_final_state, article_uuids=metadata_list
+                    enriched_summary = enrich_summary_to_app_model(
+                        raw_result, idx_to_metadata
                     )
 
-                    group_obj = save_st_mas_collection(
-                        collection=topic_collection,
+                    summary_obj = save_dn_mas_summary(
+                        enriched_summary=enriched_summary,
                         articles_list=articles_list,
+                        start_date=start_date,
+                        end_date=end_date,
                         agent_name="scheduler",
                         context=context_str,
                         fomc_announcement_datetime=fomc_time,
+                        created_at = now,
+                        
                     )
                     self.stdout.write(
                         self.style.SUCCESS(
-                            f"     ✅ ST-MAS Complete: Saved Group {group_obj.uuid} ({len(topic_collection.topics)} topics)"
+                            f"     ✅ DN-MAS Complete: Saved Summary {summary_obj.uuid}"
                         )
                     )
 
-                log_msg = f"{msg} | Fetched: {len(articles)}, New: {new_saved}, Updated: {updated}"
-                FetchLog.objects.create(message=log_msg)
+                # --- RUN ST-MAS ---
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"   ∟ Triggering ST-MAS (Parallel Topics)..."
+                    )
+                )
+                st_final_state = asyncio.run(st_mas_runner(initial_state))
 
-            except Exception as e:
-                error_msg = f"FAILED Pipeline at {now.strftime('%H:%M:%S')}: {str(e)}"
-                self.stdout.write(self.style.ERROR(f"   ∟ {error_msg}"))
-                import traceback
+                # Convert labels to metadata
+                topic_collection = convert_topic_analysis_indexes_to_uuids(
+                    llm_output=st_final_state, article_uuids=metadata_list
+                )
 
-                self.stdout.write(traceback.format_exc())
-                FetchLog.objects.create(message=error_msg)
-        else:
-            self.stdout.write(
-                f"SKIPPING: (Critical Window: {is_critical}) at {now.strftime('%H:%M:%S')}"
-            )
+                group_obj = save_st_mas_collection(
+                    collection=topic_collection,
+                    articles_list=articles_list,
+                    agent_name="scheduler",
+                    context=context_str,
+                    fomc_announcement_datetime=fomc_time,
+                    created_at = now,
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"     ✅ ST-MAS Complete: Saved Group {group_obj.uuid} ({len(topic_collection.topics)} topics)"
+                    )
+                )
+
+            # log_msg = f"{msg} | Fetched: {len(articles)}, New: {new_saved}, Updated: {updated}"
+            # FetchLog.objects.create(message=log_msg)
+
+        except Exception as e:
+            error_msg = f"FAILED Pipeline at {now.strftime('%H:%M:%S')}: {str(e)}"
+            self.stdout.write(self.style.ERROR(f"   ∟ {error_msg}"))
+            import traceback
+
+            self.stdout.write(traceback.format_exc())
+            FetchLog.objects.create(message=error_msg)

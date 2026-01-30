@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.utils import timezone
 
 from news.models import Article
 
@@ -15,7 +16,7 @@ class Summary(models.Model):
     summary_text = models.TextField()
 
     # Metadata
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     # Processing info
     article_count = models.IntegerField(default=0, help_text="Number of articles used")
@@ -183,7 +184,7 @@ class TopicAnalysisGroup(models.Model):
         default="general",
         help_text="Analysis context: pre_announcement, post_announcement, general",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     fomc_announcement_datetime = models.DateTimeField(null=True, blank=True)
 
     # Articles used for this whole run
@@ -253,7 +254,7 @@ class TopicAnalysis(models.Model):
     sentiment = models.CharField(max_length=20)  # hawkish, dovish, neutral
     summary_text = models.TextField()
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     @property
     def display_name(self):
@@ -294,6 +295,19 @@ class TopicMetric(models.Model):
 
     def __str__(self):
         return f"{self.name}: {self.value}"
+
+
+class SystemMetadata(models.Model):
+    """
+    Singleton-ish model to store global system state or metadata,
+    such as the next scheduled update time.
+    """
+    key = models.CharField(max_length=50, unique=True)
+    value = models.TextField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
 
 
 class TopicExpert(models.Model):

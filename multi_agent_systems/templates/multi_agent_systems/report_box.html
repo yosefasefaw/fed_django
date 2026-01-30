@@ -14,6 +14,19 @@
         <h1>Report Box</h1>
         <p class="text-muted">All generated reports from the multi-agent pipelines, sorted by date. Click a row to view
             details.</p>
+        {% if next_run %}
+        <div class="next-update-info"
+            style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280; display: flex; align-items: center; gap: 0.5rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="feather feather-clock">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span style="font-weight: 500;">Next Scheduled Update:</span>
+            <span>{{ next_run|date:"M d, Y H:i" }} UTC</span>
+        </div>
+        {% endif %}
     </header>
 
     <div class="table-wrapper card">
