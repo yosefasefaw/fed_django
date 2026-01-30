@@ -36,9 +36,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="source-quote">"${source.sentence}"</div>
                         <div class="source-meta">
                             ${source.expert_name ? `<span class="expert-name">— ${source.expert_name}</span>` : ''}
-                            <a href="${source.article_url}" target="_blank" class="source-link">
-                                ${source.article_source}: ${source.article_title}
-                            </a>
+                            <span class="source-title">${source.article_source}</span>
+                            <a href="${source.article_url}" target="_blank" class="full-article-link">Full Article →</a>
                         </div>
                     </div>
                 `;

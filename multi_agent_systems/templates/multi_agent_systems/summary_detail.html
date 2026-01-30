@@ -14,41 +14,29 @@
     <aside class="summary-sidebar">
         <div class="sidebar-section">
             <h4>Report Info</h4>
+            {% if summary.fomc_announcement_datetime %}
             <div class="info-item">
-                <span class="info-label">Type</span>
-                <span class="type-badge type-summary">DN-MAS</span>
+                <span class="info-label">FOMC</span>
+                <span class="info-value">{{ summary.fomc_announcement_datetime|date:"F j, Y" }}</span>
             </div>
+            {% endif %}
             <div class="info-item">
                 <span class="info-label">Focus</span>
-                <span class="info-value" style="color: var(--primary); font-weight: 600;">{{ timing_focus }}</span>
+                <span class="info-value">{{ timing_focus }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Generated</span>
+                <span class="info-value">{{ summary.created_at|date:"F j, Y, H:i" }}</span>
             </div>
             {% if timing_delta %}
             <div class="info-item">
                 <span class="info-label">Delta</span>
-                <span class="info-value" style="color: var(--primary); font-weight: 600;">{{ timing_delta }}</span>
+                <span class="info-value delta-{% if 'post' in timing_focus|lower %}post{% else %}pre{% endif %}">{{ timing_delta }}</span>
             </div>
             {% endif %}
-            {% if summary.fomc_announcement_datetime %}
-            <div class="info-item">
-                <span class="info-label">FOMC Focus</span>
-                <span class="info-value">{{ summary.fomc_announcement_datetime|date:"M j, Y H:i" }}</span>
-            </div>
-            {% endif %}
-            <div class="info-item">
-                <span class="info-label">Generated</span>
-                <span class="info-value">{{ summary.created_at|date:"M j, Y" }}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Time</span>
-                <span class="info-value">{{ summary.created_at|date:"H:i" }}</span>
-            </div>
             <div class="info-item">
                 <span class="info-label">Articles</span>
                 <span class="info-value">{{ summary.article_count }}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">ID</span>
-                <span class="uuid-chip">{{ summary.uuid|stringformat:".8s" }}...</span>
             </div>
         </div>
 

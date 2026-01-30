@@ -42,11 +42,11 @@
                     {% for source in citation.sources.all %}
                     <div class="source-item">
                         <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                        <div class="source-meta">
+                        <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
                             <span class="source-title">{{ source.article_source }}</span>
                             {% if source.article_url %}
-                            <a href="{{ source.article_url }}" target="_blank" rel="noopener" class="source-link">Read
-                                Article →</a>
+                            <a href="{{ source.article_url }}" target="_blank" rel="noopener"
+                                class="full-article-link">Full Article →</a>
                             {% endif %}
                         </div>
                     </div>
@@ -58,312 +58,324 @@
         </section>
 
         <!-- Sectoral Metrics (Horizontal, like Expert Analysis) -->
-        <section class="topic-section">
-            <h3 class="section-title">Sectoral Metrics</h3>
+        <section class="topic-section collapsible-section">
+            <button class="stance-header" onclick="toggleSection(this)">
+                <h3 class="section-title">Sectoral
+                    Metrics ({{ total_metrics_count }})</h3>
+                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </button>
+            <div class="stance-content">
 
-            {% if hawkish_metrics %}
-            <div class="stance-group hawk collapsible-section">
-                <button class="stance-header" onclick="toggleSection(this)">
-                    <h4 class="stance-label">Hawkish Metrics ({{ hawkish_metrics|length }})</h4>
-                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="m6 9 6 6 6-6" />
-                    </svg>
-                </button>
-                <div class="stance-content">
-                    <div class="metric-list">
-                        {% for metric in hawkish_metrics %}
-                        <div class="metric-card card">
-                            <div class="metric-header">
-                                <span class="metric-name">{{ metric.name }}</span>
-                            </div>
-                            <div class="metric-discussion">
-                                {{ metric.discussion|linebreaks }}
-                            </div>
-                            {% if metric.citations.all %}
-                            <details class="sources-toggle">
-                                <summary class="sources-label">View Sources ({{ metric.citations.count }})</summary>
-                                <div class="sources-list">
-                                    {% for citation in metric.citations.all %}
-                                    {% for source in citation.sources.all %}
-                                    <div class="source-item">
-                                        <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                        <div class="source-meta">
-                                            <span class="source-title">{{ source.article_source }}</span>
-                                            {% if source.article_url %}
-                                            <a href="{{ source.article_url }}" target="_blank" rel="noopener"
-                                                class="source-link">Read Article →</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    {% endfor %}
+                {% if hawkish_metrics %}
+                <div class="stance-group hawk collapsible-section">
+                    <button class="stance-header" onclick="toggleSection(this)">
+                        <h4 class="stance-label">Hawkish Metrics ({{ hawkish_metrics|length }})</h4>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="stance-content">
+                        <div class="metric-list">
+                            {% for metric in hawkish_metrics %}
+                            <div class="metric-card card">
+                                <div class="metric-header">
+                                    <span class="metric-name">{{ metric.name }}</span>
                                 </div>
-                            </details>
-                            {% endif %}
+                                <div class="metric-discussion">
+                                    {{ metric.discussion|linebreaks }}
+                                </div>
+                                {% if metric.citations.all %}
+                                <details class="sources-toggle">
+                                    <summary class="sources-label">View Sources ({{ metric.citations.count }})</summary>
+                                    <div class="sources-list">
+                                        {% for citation in metric.citations.all %}
+                                        {% for source in citation.sources.all %}
+                                        <div class="source-item">
+                                            <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
+                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                                <span class="source-title">{{ source.article_source }}</span>
+                                                {% if source.article_url %}
+                                                <a href="{{ source.article_url }}" target="_blank" rel="noopener"
+                                                    class="full-article-link">Full Article →</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </details>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            {% if neutral_metrics %}
-            <div class="stance-group neutral collapsible-section">
-                <button class="stance-header" onclick="toggleSection(this)">
-                    <h4 class="stance-label">Neutral Metrics ({{ neutral_metrics|length }})</h4>
-                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="m6 9 6 6 6-6" />
-                    </svg>
-                </button>
-                <div class="stance-content">
-                    <div class="metric-list">
-                        {% for metric in neutral_metrics %}
-                        <div class="metric-card card">
-                            <div class="metric-header">
-                                <span class="metric-name">{{ metric.name }}</span>
-                            </div>
-                            <div class="metric-discussion">
-                                {{ metric.discussion|linebreaks }}
-                            </div>
-                            {% if metric.citations.all %}
-                            <details class="sources-toggle">
-                                <summary class="sources-label">View Sources ({{ metric.citations.count }})</summary>
-                                <div class="sources-list">
-                                    {% for citation in metric.citations.all %}
-                                    {% for source in citation.sources.all %}
-                                    <div class="source-item">
-                                        <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                        <div class="source-meta">
-                                            <span class="source-title">{{ source.article_source }}</span>
-                                            {% if source.article_url %}
-                                            <a href="{{ source.article_url }}" target="_blank" rel="noopener"
-                                                class="source-link">Read Article →</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    {% endfor %}
+                {% if neutral_metrics %}
+                <div class="stance-group neutral collapsible-section">
+                    <button class="stance-header" onclick="toggleSection(this)">
+                        <h4 class="stance-label">Neutral Metrics ({{ neutral_metrics|length }})</h4>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="stance-content">
+                        <div class="metric-list">
+                            {% for metric in neutral_metrics %}
+                            <div class="metric-card card">
+                                <div class="metric-header">
+                                    <span class="metric-name">{{ metric.name }}</span>
                                 </div>
-                            </details>
-                            {% endif %}
+                                <div class="metric-discussion">
+                                    {{ metric.discussion|linebreaks }}
+                                </div>
+                                {% if metric.citations.all %}
+                                <details class="sources-toggle">
+                                    <summary class="sources-label">View Sources ({{ metric.citations.count }})</summary>
+                                    <div class="sources-list">
+                                        {% for citation in metric.citations.all %}
+                                        {% for source in citation.sources.all %}
+                                        <div class="source-item">
+                                            <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
+                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                                <span class="source-title">{{ source.article_source }}</span>
+                                                {% if source.article_url %}
+                                                <a href="{{ source.article_url }}" target="_blank" rel="noopener"
+                                                    class="full-article-link">Full Article →</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </details>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            {% if dovish_metrics %}
-            <div class="stance-group dove collapsible-section">
-                <button class="stance-header" onclick="toggleSection(this)">
-                    <h4 class="stance-label">Dovish Metrics ({{ dovish_metrics|length }})</h4>
-                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="m6 9 6 6 6-6" />
-                    </svg>
-                </button>
-                <div class="stance-content">
-                    <div class="metric-list">
-                        {% for metric in dovish_metrics %}
-                        <div class="metric-card card">
-                            <div class="metric-header">
-                                <span class="metric-name">{{ metric.name }}</span>
-                            </div>
-                            <div class="metric-discussion">
-                                {{ metric.discussion|linebreaks }}
-                            </div>
-                            {% if metric.citations.all %}
-                            <details class="sources-toggle">
-                                <summary class="sources-label">View Sources ({{ metric.citations.count }})</summary>
-                                <div class="sources-list">
-                                    {% for citation in metric.citations.all %}
-                                    {% for source in citation.sources.all %}
-                                    <div class="source-item">
-                                        <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                        <div class="source-meta">
-                                            <span class="source-title">{{ source.article_source }}</span>
-                                            {% if source.article_url %}
-                                            <a href="{{ source.article_url }}" target="_blank" rel="noopener"
-                                                class="source-link">Read Article →</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    {% endfor %}
+                {% if dovish_metrics %}
+                <div class="stance-group dove collapsible-section">
+                    <button class="stance-header" onclick="toggleSection(this)">
+                        <h4 class="stance-label">Dovish Metrics ({{ dovish_metrics|length }})</h4>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="stance-content">
+                        <div class="metric-list">
+                            {% for metric in dovish_metrics %}
+                            <div class="metric-card card">
+                                <div class="metric-header">
+                                    <span class="metric-name">{{ metric.name }}</span>
                                 </div>
-                            </details>
-                            {% endif %}
+                                <div class="metric-discussion">
+                                    {{ metric.discussion|linebreaks }}
+                                </div>
+                                {% if metric.citations.all %}
+                                <details class="sources-toggle">
+                                    <summary class="sources-label">View Sources ({{ metric.citations.count }})</summary>
+                                    <div class="sources-list">
+                                        {% for citation in metric.citations.all %}
+                                        {% for source in citation.sources.all %}
+                                        <div class="source-item">
+                                            <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
+                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                                <span class="source-title">{{ source.article_source }}</span>
+                                                {% if source.article_url %}
+                                                <a href="{{ source.article_url }}" target="_blank" rel="noopener"
+                                                    class="full-article-link">Full Article →</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </details>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            {% if not hawkish_metrics and not neutral_metrics and not dovish_metrics %}
-            <div class="empty-notif text-muted card">No metrics extracted for this topic.</div>
-            {% endif %}
+            </div>
         </section>
 
         <!-- Expert Analysis Grouped by Stance -->
-        <section class="topic-section">
-            <h3 class="section-title">Expert Analysis</h3>
+        <section class="topic-section collapsible-section">
+            <button class="stance-header" onclick="toggleSection(this)">
+                <h3 class="section-title">Expert
+                    Analysis ({{ total_experts_count }})</h3>
+                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </button>
+            <div class="stance-content">
 
-            {% if hawkish_experts %}
-            <div class="stance-group hawk collapsible-section">
-                <button class="stance-header" onclick="toggleSection(this)">
-                    <h4 class="stance-label">Hawkish Opinions ({{ hawkish_experts|length }})</h4>
-                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="m6 9 6 6 6-6" />
-                    </svg>
-                </button>
-                <div class="stance-content">
-                    <div class="expert-list">
-                        {% for expert in hawkish_experts %}
-                        <div class="expert-card card">
-                            <div class="expert-header">
-                                <div class="expert-info">
-                                    <span class="expert-name">{{ expert.expert_name }}</span>
-                                    <span class="expert-org text-muted">{{ expert.organization }}</span>
-                                </div>
-                            </div>
-                            <div class="expert-opinion">
-                                {{ expert.opinion|linebreaks }}
-                            </div>
-                            {% if expert.citations.all %}
-                            <details class="sources-toggle">
-                                <summary class="sources-label">View Sources ({{ expert.citations.count }})</summary>
-                                <div class="sources-list">
-                                    {% for citation in expert.citations.all %}
-                                    {% for source in citation.sources.all %}
-                                    <div class="source-item">
-                                        <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                        <div class="source-meta">
-                                            <span class="source-title">{{ source.article_source }}</span>
-                                            {% if source.article_url %}
-                                            <a href="{{ source.article_url }}" target="_blank" rel="noopener"
-                                                class="source-link">Read Article →</a>
-                                            {% endif %}
-                                        </div>
+                {% if hawkish_experts %}
+                <div class="stance-group hawk collapsible-section">
+                    <button class="stance-header" onclick="toggleSection(this)">
+                        <h4 class="stance-label">Hawkish Opinions ({{ hawkish_experts|length }})</h4>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="stance-content">
+                        <div class="expert-list">
+                            {% for expert in hawkish_experts %}
+                            <div class="expert-card card">
+                                <div class="expert-header">
+                                    <div class="expert-info">
+                                        <span class="expert-name">{{ expert.expert_name }}</span>
+                                        <span class="expert-org text-muted">{{ expert.organization }}</span>
                                     </div>
-                                    {% endfor %}
-                                    {% endfor %}
                                 </div>
-                            </details>
-                            {% endif %}
+                                <div class="expert-opinion">
+                                    {{ expert.opinion|linebreaks }}
+                                </div>
+                                {% if expert.citations.all %}
+                                <details class="sources-toggle">
+                                    <summary class="sources-label">View Sources ({{ expert.citations.count }})</summary>
+                                    <div class="sources-list">
+                                        {% for citation in expert.citations.all %}
+                                        {% for source in citation.sources.all %}
+                                        <div class="source-item">
+                                            <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
+                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                                <span class="source-title">{{ source.article_source }}</span>
+                                                {% if source.article_url %}
+                                                <a href="{{ source.article_url }}" target="_blank" rel="noopener"
+                                                    class="full-article-link">Full Article →</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </details>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            {% if neutral_experts %}
-            <div class="stance-group neutral collapsible-section">
-                <button class="stance-header" onclick="toggleSection(this)">
-                    <h4 class="stance-label">Neutral Opinions ({{ neutral_experts|length }})</h4>
-                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="m6 9 6 6 6-6" />
-                    </svg>
-                </button>
-                <div class="stance-content">
-                    <div class="expert-list">
-                        {% for expert in neutral_experts %}
-                        <div class="expert-card card">
-                            <div class="expert-header">
-                                <div class="expert-info">
-                                    <span class="expert-name">{{ expert.expert_name }}</span>
-                                    <span class="expert-org text-muted">{{ expert.organization }}</span>
-                                </div>
-                            </div>
-                            <div class="expert-opinion">
-                                {{ expert.opinion|linebreaks }}
-                            </div>
-                            {% if expert.citations.all %}
-                            <details class="sources-toggle">
-                                <summary class="sources-label">View Sources ({{ expert.citations.count }})</summary>
-                                <div class="sources-list">
-                                    {% for citation in expert.citations.all %}
-                                    {% for source in citation.sources.all %}
-                                    <div class="source-item">
-                                        <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                        <div class="source-meta">
-                                            <span class="source-title">{{ source.article_source }}</span>
-                                            {% if source.article_url %}
-                                            <a href="{{ source.article_url }}" target="_blank" rel="noopener"
-                                                class="source-link">Read Article →</a>
-                                            {% endif %}
-                                        </div>
+                {% if neutral_experts %}
+                <div class="stance-group neutral collapsible-section">
+                    <button class="stance-header" onclick="toggleSection(this)">
+                        <h4 class="stance-label">Neutral Opinions ({{ neutral_experts|length }})</h4>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="stance-content">
+                        <div class="expert-list">
+                            {% for expert in neutral_experts %}
+                            <div class="expert-card card">
+                                <div class="expert-header">
+                                    <div class="expert-info">
+                                        <span class="expert-name">{{ expert.expert_name }}</span>
+                                        <span class="expert-org text-muted">{{ expert.organization }}</span>
                                     </div>
-                                    {% endfor %}
-                                    {% endfor %}
                                 </div>
-                            </details>
-                            {% endif %}
+                                <div class="expert-opinion">
+                                    {{ expert.opinion|linebreaks }}
+                                </div>
+                                {% if expert.citations.all %}
+                                <details class="sources-toggle">
+                                    <summary class="sources-label">View Sources ({{ expert.citations.count }})</summary>
+                                    <div class="sources-list">
+                                        {% for citation in expert.citations.all %}
+                                        {% for source in citation.sources.all %}
+                                        <div class="source-item">
+                                            <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
+                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                                <span class="source-title">{{ source.article_source }}</span>
+                                                {% if source.article_url %}
+                                                <a href="{{ source.article_url }}" target="_blank" rel="noopener"
+                                                    class="full-article-link">Full Article →</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </details>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            {% if dovish_experts %}
-            <div class="stance-group dove collapsible-section">
-                <button class="stance-header" onclick="toggleSection(this)">
-                    <h4 class="stance-label">Dovish Opinions ({{ dovish_experts|length }})</h4>
-                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="m6 9 6 6 6-6" />
-                    </svg>
-                </button>
-                <div class="stance-content">
-                    <div class="expert-list">
-                        {% for expert in dovish_experts %}
-                        <div class="expert-card card">
-                            <div class="expert-header">
-                                <div class="expert-info">
-                                    <span class="expert-name">{{ expert.expert_name }}</span>
-                                    <span class="expert-org text-muted">{{ expert.organization }}</span>
-                                </div>
-                            </div>
-                            <div class="expert-opinion">
-                                {{ expert.opinion|linebreaks }}
-                            </div>
-                            {% if expert.citations.all %}
-                            <details class="sources-toggle">
-                                <summary class="sources-label">View Sources ({{ expert.citations.count }})</summary>
-                                <div class="sources-list">
-                                    {% for citation in expert.citations.all %}
-                                    {% for source in citation.sources.all %}
-                                    <div class="source-item">
-                                        <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                        <div class="source-meta">
-                                            <span class="source-title">{{ source.article_source }}</span>
-                                            {% if source.article_url %}
-                                            <a href="{{ source.article_url }}" target="_blank" rel="noopener"
-                                                class="source-link">Read Article →</a>
-                                            {% endif %}
-                                        </div>
+                {% if dovish_experts %}
+                <div class="stance-group dove collapsible-section">
+                    <button class="stance-header" onclick="toggleSection(this)">
+                        <h4 class="stance-label">Dovish Opinions ({{ dovish_experts|length }})</h4>
+                        <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="stance-content">
+                        <div class="expert-list">
+                            {% for expert in dovish_experts %}
+                            <div class="expert-card card">
+                                <div class="expert-header">
+                                    <div class="expert-info">
+                                        <span class="expert-name">{{ expert.expert_name }}</span>
+                                        <span class="expert-org text-muted">{{ expert.organization }}</span>
                                     </div>
-                                    {% endfor %}
-                                    {% endfor %}
                                 </div>
-                            </details>
-                            {% endif %}
+                                <div class="expert-opinion">
+                                    {{ expert.opinion|linebreaks }}
+                                </div>
+                                {% if expert.citations.all %}
+                                <details class="sources-toggle">
+                                    <summary class="sources-label">View Sources ({{ expert.citations.count }})</summary>
+                                    <div class="sources-list">
+                                        {% for citation in expert.citations.all %}
+                                        {% for source in citation.sources.all %}
+                                        <div class="source-item">
+                                            <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
+                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                                <span class="source-title">{{ source.article_source }}</span>
+                                                {% if source.article_url %}
+                                                <a href="{{ source.article_url }}" target="_blank" rel="noopener"
+                                                    class="full-article-link">Full Article →</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </details>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            {% if not hawkish_experts and not neutral_experts and not dovish_experts %}
-            <div class="empty-notif text-muted card">No specific expert opinions extracted for this period.</div>
-            {% endif %}
+            </div>
         </section>
     </div>
 </div>

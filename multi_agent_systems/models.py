@@ -78,9 +78,9 @@ class Summary(models.Model):
     @property
     def get_timing_focus(self):
         if not self.fomc_announcement_datetime:
-            return self.context.replace("_", " ").lower().replace(" ", "-") if self.context else "general"
+            return self.context.replace("_", " ").title() if self.context else "General"
         diff = self.created_at - self.fomc_announcement_datetime
-        return "post-fomc-announcement" if diff.total_seconds() >= 0 else "pre-fomc-announcement"
+        return "Post-Announcement" if diff.total_seconds() >= 0 else "Pre-Announcement"
 
     @property
     def get_timing_delta(self):
@@ -208,9 +208,9 @@ class TopicAnalysisGroup(models.Model):
     @property
     def get_timing_focus(self):
         if not self.fomc_announcement_datetime:
-            return self.context.replace("_", " ").lower().replace(" ", "-") if self.context else "general"
+            return self.context.replace("_", " ").title() if self.context else "General"
         diff = self.created_at - self.fomc_announcement_datetime
-        return "post-fomc-announcement" if diff.total_seconds() >= 0 else "pre-fomc-announcement"
+        return "Post-Announcement" if diff.total_seconds() >= 0 else "Pre-Announcement"
 
     @property
     def get_timing_delta(self):

@@ -17,7 +17,7 @@
         <div class="header-meta-row">
             <!-- Navigation: Previous -->
             {% if prev_group %}
-            <a href="{% url 'multi_agent_systems:topic_analysis_detail' uuid=prev_group.uuid %}" class="nav-link"
+            <a href="{% url 'multi_agent_systems:topic_analysis_detail' uuid=prev_group.uuid %}" class="meta-nav-link"
                 title="Previous Analysis">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                     <path d="m15 18-6-6 6-6" />
@@ -25,7 +25,7 @@
                 Prev
             </a>
             {% else %}
-            <span class="nav-link disabled">
+            <span class="meta-nav-link disabled">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                     <path d="m15 18-6-6 6-6" />
                 </svg>
@@ -33,41 +33,40 @@
             </span>
             {% endif %}
 
+            {% if group.fomc_announcement_datetime %}
+            <div class="meta-item">
+                <span class="meta-label">FOMC</span>
+                <span class="meta-value">{{ group.fomc_announcement_datetime|date:"F j, Y" }}</span>
+            </div>
             <span class="meta-divider">•</span>
+            {% endif %}
 
             <div class="meta-item">
                 <span
-                    class="context-badge {% if 'pre' in timing_focus %}badge-pre{% elif 'post' in timing_focus %}badge-post{% endif %}">
+                    class="context-badge {% if 'pre' in timing_focus|lower %}badge-pre{% elif 'post' in timing_focus|lower %}badge-post{% endif %}">
                     {{ timing_focus }}
                 </span>
+            </div>
+            <span class="meta-divider">•</span>
+
+            <div class="meta-item">
+                <span class="meta-label">Generated</span>
+                <span class="meta-value">{{ group.created_at|date:"F j, Y, H:i" }}</span>
             </div>
             <span class="meta-divider">•</span>
 
             {% if timing_delta %}
             <div class="meta-item">
                 <span class="meta-label">Delta</span>
-                <span class="meta-value" style="color: var(--primary); font-weight: 600;">{{ timing_delta }}</span>
-            </div>
-            <span class="meta-divider">•</span>
-            {% endif %}
-
-            {% if group.fomc_announcement_datetime %}
-            <div class="meta-item">
-                <span class="meta-label">FOMC Focus</span>
-                <span class="meta-value">{{ group.fomc_announcement_datetime|date:"M j, H:i" }}</span>
+                <span class="meta-value delta-{% if 'post' in timing_focus|lower %}post{% else %}pre{% endif %}">{{
+                    timing_delta }}</span>
             </div>
             <span class="meta-divider">•</span>
             {% endif %}
 
             <div class="meta-item">
-                <span class="meta-label">Generated</span>
-                <span class="meta-value">{{ group.created_at|date:"M d, Y" }}</span>
-            </div>
-            <span class="meta-divider">•</span>
-
-            <div class="meta-item">
-                <span class="meta-label">Sources</span>
-                <span class="meta-value">{{ group.articles_provided.count }} articles</span>
+                <span class="meta-label">Articles</span>
+                <span class="meta-value">{{ group.articles_provided.count }}</span>
             </div>
 
             {% if not next_group %}
@@ -82,7 +81,7 @@
 
             <!-- Navigation: Next -->
             {% if next_group %}
-            <a href="{% url 'multi_agent_systems:topic_analysis_detail' uuid=next_group.uuid %}" class="nav-link"
+            <a href="{% url 'multi_agent_systems:topic_analysis_detail' uuid=next_group.uuid %}" class="meta-nav-link"
                 title="Next Analysis">
                 Next
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
@@ -90,7 +89,7 @@
                 </svg>
             </a>
             {% else %}
-            <span class="nav-link disabled">
+            <span class="meta-nav-link disabled">
                 Next
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                     <path d="m9 18 6-6-6-6" />

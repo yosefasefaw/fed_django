@@ -52,6 +52,17 @@
     justify-content: center;
 }
 
+/* Delta Timing Colors */
+.delta-post {
+    color: #16a34a !important;
+    /* Greenish */
+}
+
+.delta-pre {
+    color: #ea580c !important;
+    /* Orange */
+}
+
 /* Sidebar Navigation */
 .sidebar-nav-v {
     display: flex;
@@ -234,6 +245,9 @@
 
 .source-meta {
     font-size: 0.8125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .expert-name {
@@ -249,6 +263,19 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+}
+
+.full-article-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.full-article-link:hover {
+    text-decoration: underline;
 }
 
 .source-link:hover {

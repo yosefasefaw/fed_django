@@ -158,6 +158,10 @@ class TopicDetailView(DetailView):
             e for e in experts if e.sentiment.lower() == "hawkish"
         ]
 
+        # Add total counts for the main collapsible sections
+        context["total_metrics_count"] = len(metrics)
+        context["total_experts_count"] = len(experts)
+
         return context
 
     def get_queryset(self):

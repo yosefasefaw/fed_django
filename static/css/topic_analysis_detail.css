@@ -46,8 +46,19 @@
     font-weight: 300;
 }
 
-/* Nav Links as Meta Items */
-.nav-link {
+/* Delta Timing Colors */
+.delta-post {
+    color: #16a34a !important;
+    /* Greenish */
+}
+
+.delta-pre {
+    color: #ea580c !important;
+    /* Orange */
+}
+
+/* Meta Nav Links (Pager) */
+.meta-nav-link {
     display: flex;
     align-items: center;
     gap: 0.25rem;
@@ -62,12 +73,12 @@
     border-radius: 4px;
 }
 
-.nav-link:hover {
+.meta-nav-link:hover {
     background: var(--primary-light);
     color: var(--primary-dark);
 }
 
-.nav-link.disabled {
+.meta-nav-link.disabled {
     color: var(--text-muted);
     pointer-events: none;
     opacity: 0.3;
@@ -77,7 +88,7 @@
     padding: 0.25rem 0.75rem;
     border-radius: 4px;
     font-size: 0.7rem;
-    font-weight: 800;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
