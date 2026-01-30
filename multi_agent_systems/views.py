@@ -3,7 +3,11 @@ from django.views.generic import ListView, TemplateView, DetailView
 from django.views import View
 from itertools import chain
 from operator import attrgetter
-from .models import Summary, TopicAnalysisGroup, TopicAnalysis
+from django.utils import timezone
+import datetime
+from django.core.paginator import Paginator
+from core.constants import FOMC_CALENDAR
+from .models import Summary, TopicAnalysisGroup, TopicAnalysis, SystemMetadata
 
 
 class SummaryListView(ListView):
@@ -34,17 +38,61 @@ class ReportBoxView(TemplateView):
         # Combine and sort by created_at (newest first)
         combined = sorted(
             chain(summaries, analyses), key=attrgetter("created_at"), reverse=True
-        )[:20]  # Limit to 20 most recent
+        )
 
-        context["reports"] = combined
+        # Filtering
+        report_type = self.request.GET.get("type")
+        focus = self.request.GET.get("focus")
+        fomc_date = self.request.GET.get("fomc_date")
+
+        if report_type:
+            combined = [r for r in combined if r.report_type == report_type]
+
+        if focus:
+            # focus value expected: "pre", "post", "announcement" (mapped from get_timing_focus)
+            # get_timing_focus returns "Pre-Announcement", "Post-Announcement", "General"
+            # We will normalize to lowercase for comparison
+            combined = [r for r in combined if focus.lower() in r.get_timing_focus.lower()]
+
+        if fomc_date:
+            combined = [
+                r for r in combined 
+                if r.fomc_announcement_datetime and r.fomc_announcement_datetime.strftime('%Y-%m-%d') == fomc_date
+            ]
+
+        # Pagination
+        paginator = Paginator(combined, 20) # Show 20 reports per page
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        context["reports"] = page_obj
+        context["page_obj"] = page_obj
+        
+        # FOMC Dates for Filter
+        # Show all dates up to the futuremost relevant one (e.g. next year)
+        # For utility, let's reverse them so most recent is top
+        
+        now = timezone.now()
+        # Ensure dates are aware for comparison if they are naive (assuming UTC as per constants)
+        calendar_aware = []
+        for d in FOMC_CALENDAR:
+            if timezone.is_naive(d):
+                calendar_aware.append(timezone.make_aware(d, datetime.timezone.utc))
+            else:
+                calendar_aware.append(d)
+
+        # Filter: All past dates + next 2 future dates
+        past_dates = [d for d in calendar_aware if d <= now]
+        future_dates = sorted([d for d in calendar_aware if d > now])
+        
+        relevant_dates = past_dates + future_dates[:2]
+        context["fomc_dates"] = sorted(relevant_dates, reverse=True)
         
         # Add next scheduled run info
-        from .models import SystemMetadata
-        from datetime import datetime
         try:
             meta = SystemMetadata.objects.get(key="next_scheduled_run")
             if meta.value:
-                context["next_run"] = datetime.fromisoformat(meta.value)
+                context["next_run"] = datetime.datetime.fromisoformat(meta.value)
         except (SystemMetadata.DoesNotExist, ValueError):
             context["next_run"] = None
             
@@ -79,16 +127,13 @@ class SummaryDetailView(DetailView):
 
         # FOMC Timing Context
         context["timing_focus"] = summary.get_timing_focus
-        context["timing_focus"] = summary.get_timing_focus
         context["timing_delta"] = summary.get_timing_delta
 
         # Add next scheduled run info
-        from .models import SystemMetadata
-        from datetime import datetime
         try:
             meta = SystemMetadata.objects.get(key="next_scheduled_run")
             if meta.value:
-                context["next_run"] = datetime.fromisoformat(meta.value)
+                context["next_run"] = datetime.datetime.fromisoformat(meta.value)
         except (SystemMetadata.DoesNotExist, ValueError):
             context["next_run"] = None
 
@@ -143,12 +188,10 @@ class TopicAnalysisGroupDetailView(DetailView):
         ]
 
         # Add next scheduled run info
-        from .models import SystemMetadata
-        from datetime import datetime
         try:
             meta = SystemMetadata.objects.get(key="next_scheduled_run")
             if meta.value:
-                context["next_run"] = datetime.fromisoformat(meta.value)
+                context["next_run"] = datetime.datetime.fromisoformat(meta.value)
         except (SystemMetadata.DoesNotExist, ValueError):
             context["next_run"] = None
 

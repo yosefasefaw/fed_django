@@ -29,6 +29,50 @@
         {% endif %}
     </header>
 
+    <!-- Filter Toolbar -->
+    <div class="filter-toolbar card">
+        <form method="get" class="filter-form">
+
+            <div class="filter-group">
+                <label for="type-filter" class="filter-label">Type</label>
+                <select name="type" id="type-filter" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="summary" {% if request.GET.type == 'summary' %}selected{% endif %}>Summary</option>
+                    <option value="analysis" {% if request.GET.type == 'analysis' %}selected{% endif %}>Analysis</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="focus-filter" class="filter-label">Timing Focus</label>
+                <select name="focus" id="focus-filter" class="filter-select">
+                    <option value="">All Scenarios</option>
+                    <option value="pre" {% if request.GET.focus == 'pre' %}selected{% endif %}>Pre-Announcement</option>
+                    <option value="post" {% if request.GET.focus == 'post' %}selected{% endif %}>Post-Announcement
+                    </option>
+                    <option value="general" {% if request.GET.focus == 'general' %}selected{% endif %}>General</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="date-filter" class="filter-label">FOMC Date</label>
+                <select name="fomc_date" id="date-filter" class="filter-select">
+                    <option value="">All Dates</option>
+                    {% for date in fomc_dates %}
+                    <option value="{{ date|date:'Y-m-d' }}" {% if request.GET.fomc_date == date|date:'Y-m-d' %}selected{% endif %}>
+                        {{ date|date:"M d, Y" }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a href="{% url 'multi_agent_systems:report_box' %}" class="btn btn-outline">Reset</a>
+            </div>
+
+        </form>
+    </div>
+
     <div class="table-wrapper card">
         <table class="data-table">
             <thead>
@@ -72,13 +116,38 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="empty-row">No reports generated yet. Run the scheduler to generate summaries
-                        and analyses.</td>
+                    <td colspan="5" class="empty-row">No reports generated yet</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Controls -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline" style="min-width: 100px;">&larr;
+            Previous</a>
+        {% else %}
+        <span class="btn btn-outline disabled" style="opacity: 0.5; cursor: default; min-width: 100px;">&larr;
+            Previous</span>
+        {% endif %}
+
+        <span class="current-page"
+            style="display: flex; align-items: center; font-weight: 600; color: var(--text-muted);">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline" style="min-width: 100px;">Next
+            &rarr;</a>
+        {% else %}
+        <span class="btn btn-outline disabled" style="opacity: 0.5; cursor: default; min-width: 100px;">Next
+            &rarr;</span>
+        {% endif %}
+    </div>
+    {% endif %}
 
 </div>
 {% endblock %}
