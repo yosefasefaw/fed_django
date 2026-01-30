@@ -255,6 +255,24 @@ class TopicAnalysis(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def display_name(self):
+        mapping = {
+            "equity_analysis": "Equities",
+            "housing_analysis": "Housing",
+            "labor_analysis": "Labor",
+            "inflation_analysis": "Inflation",
+            "gdp_analysis": "GDP",
+            "consumer_analysis": "Consumers",
+            "interest_rate_analysis": "Rates",
+            "forex_analysis": "Forex",
+            "bonds_analysis": "Bonds",
+        }
+        raw_name = self.topic_name.lower()
+        if raw_name in mapping:
+            return mapping[raw_name]
+        return self.topic_name.replace("_", " ").title().replace(" Analysis", "")
+
     class Meta:
         verbose_name_plural = "Topic Analyses"
 

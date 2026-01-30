@@ -19,7 +19,7 @@
                     <path d="m15 18-6-6 6-6" />
                 </svg>
             </a>
-            <h1 class="topic-page-title">{{ topic.topic_name|title }} Deep-Dive</h1>
+            <h1 class="topic-page-title">{{ topic.display_name }} Deep-Dive</h1>
         </div>
         <div
             class="sentiment-marker {% if topic.sentiment|lower == 'hawkish' %}hawk-marker{% elif topic.sentiment|lower == 'dovish' %}dove-marker{% else %}neutral-marker{% endif %}">
@@ -96,7 +96,8 @@
                                         {% for source in citation.sources.all %}
                                         <div class="source-item">
                                             <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                            <div class="source-meta"
+                                                style="flex-direction: column; align-items: flex-start;">
                                                 <span class="source-title">{{ source.article_source }}</span>
                                                 {% if source.article_url %}
                                                 <a href="{{ source.article_url }}" target="_blank" rel="noopener"
@@ -143,7 +144,8 @@
                                         {% for source in citation.sources.all %}
                                         <div class="source-item">
                                             <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                            <div class="source-meta"
+                                                style="flex-direction: column; align-items: flex-start;">
                                                 <span class="source-title">{{ source.article_source }}</span>
                                                 {% if source.article_url %}
                                                 <a href="{{ source.article_url }}" target="_blank" rel="noopener"
@@ -190,7 +192,8 @@
                                         {% for source in citation.sources.all %}
                                         <div class="source-item">
                                             <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                            <div class="source-meta"
+                                                style="flex-direction: column; align-items: flex-start;">
                                                 <span class="source-title">{{ source.article_source }}</span>
                                                 {% if source.article_url %}
                                                 <a href="{{ source.article_url }}" target="_blank" rel="noopener"
@@ -255,7 +258,8 @@
                                         {% for source in citation.sources.all %}
                                         <div class="source-item">
                                             <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                            <div class="source-meta"
+                                                style="flex-direction: column; align-items: flex-start;">
                                                 <span class="source-title">{{ source.article_source }}</span>
                                                 {% if source.article_url %}
                                                 <a href="{{ source.article_url }}" target="_blank" rel="noopener"
@@ -305,7 +309,8 @@
                                         {% for source in citation.sources.all %}
                                         <div class="source-item">
                                             <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                            <div class="source-meta"
+                                                style="flex-direction: column; align-items: flex-start;">
                                                 <span class="source-title">{{ source.article_source }}</span>
                                                 {% if source.article_url %}
                                                 <a href="{{ source.article_url }}" target="_blank" rel="noopener"
@@ -355,7 +360,8 @@
                                         {% for source in citation.sources.all %}
                                         <div class="source-item">
                                             <blockquote class="source-quote">"{{ source.sentence }}"</blockquote>
-                                            <div class="source-meta" style="flex-direction: column; align-items: flex-start;">
+                                            <div class="source-meta"
+                                                style="flex-direction: column; align-items: flex-start;">
                                                 <span class="source-title">{{ source.article_source }}</span>
                                                 {% if source.article_url %}
                                                 <a href="{{ source.article_url }}" target="_blank" rel="noopener"

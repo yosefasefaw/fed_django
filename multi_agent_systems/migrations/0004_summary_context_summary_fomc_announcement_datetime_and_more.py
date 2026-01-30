@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("multi_agent_systems", "0003_topicanalysisgroup_context"),
     ]

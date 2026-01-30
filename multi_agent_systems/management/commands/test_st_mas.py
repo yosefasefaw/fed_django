@@ -86,7 +86,9 @@ class Command(BaseCommand):
 
         self.stdout.write(f"\n📅 Date range: {start_date.date()} to {end_date.date()}")
 
-        articles_qs = get_articles_from_db(start_date, end_date, filter_sources).order_by("published_at")
+        articles_qs = get_articles_from_db(
+            start_date, end_date, filter_sources
+        ).order_by("published_at")
         articles_list = list(articles_qs[:limit])
 
         if not articles_list:

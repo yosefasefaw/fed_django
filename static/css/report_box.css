@@ -127,3 +127,28 @@
     background-color: #fef3c7;
     color: #92400e;
 }
+
+/* Focus Badges */
+.focus-badge {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
+.focus-post {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.focus-pre {
+    background-color: #ffe4e6;
+    color: #9f1239;
+}
+
+.focus-announcement {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}

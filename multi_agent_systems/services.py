@@ -32,11 +32,13 @@ def save_dn_mas_summary(
     if fomc_announcement_datetime and isinstance(fomc_announcement_datetime, str):
         from django.utils.dateparse import parse_datetime
         from django.utils import timezone
+
         fomc_announcement_datetime = parse_datetime(fomc_announcement_datetime)
         if fomc_announcement_datetime and timezone.is_naive(fomc_announcement_datetime):
             fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
-    elif fomc_announcement_datetime and hasattr(fomc_announcement_datetime, 'hour'):
+    elif fomc_announcement_datetime and hasattr(fomc_announcement_datetime, "hour"):
         from django.utils import timezone
+
         if timezone.is_naive(fomc_announcement_datetime):
             fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
 
@@ -96,11 +98,13 @@ def save_st_mas_collection(
     if fomc_announcement_datetime and isinstance(fomc_announcement_datetime, str):
         from django.utils.dateparse import parse_datetime
         from django.utils import timezone
+
         fomc_announcement_datetime = parse_datetime(fomc_announcement_datetime)
         if fomc_announcement_datetime and timezone.is_naive(fomc_announcement_datetime):
             fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
-    elif fomc_announcement_datetime and hasattr(fomc_announcement_datetime, 'hour'):
+    elif fomc_announcement_datetime and hasattr(fomc_announcement_datetime, "hour"):
         from django.utils import timezone
+
         if timezone.is_naive(fomc_announcement_datetime):
             fomc_announcement_datetime = timezone.make_aware(fomc_announcement_datetime)
 

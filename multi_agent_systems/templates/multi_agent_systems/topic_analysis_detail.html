@@ -58,8 +58,7 @@
             {% if timing_delta %}
             <div class="meta-item">
                 <span class="meta-label">Delta</span>
-                <span class="meta-value delta-{% if 'post' in timing_focus|lower %}post{% else %}pre{% endif %}">{{
-                    timing_delta }}</span>
+                <span class="meta-value delta-{% if 'post' in timing_focus|lower %}post{% else %}pre{% endif %}">{{timing_delta }}</span>
             </div>
             <span class="meta-divider">•</span>
             {% endif %}
@@ -108,7 +107,7 @@
                 <a href="{% url 'multi_agent_systems:topic_detail' pk=topic.pk %}" class="topic-card-link">
                     <div class="topic-card card">
                         <div class="topic-title">
-                            <span>{{ topic.topic_name }}</span>
+                            <span>{{ topic.display_name }}</span>
                         </div>
                     </div>
                 </a>
@@ -126,7 +125,7 @@
                 <a href="{% url 'multi_agent_systems:topic_detail' pk=topic.pk %}" class="topic-card-link">
                     <div class="topic-card card">
                         <div class="topic-title">
-                            <span>{{ topic.topic_name }}</span>
+                            <span>{{ topic.display_name }}</span>
                         </div>
                     </div>
                 </a>
@@ -144,7 +143,7 @@
                 <a href="{% url 'multi_agent_systems:topic_detail' pk=topic.pk %}" class="topic-card-link">
                     <div class="topic-card card">
                         <div class="topic-title">
-                            <span>{{ topic.topic_name }}</span>
+                            <span>{{ topic.display_name }}</span>
                         </div>
                     </div>
                 </a>

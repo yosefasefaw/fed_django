@@ -62,7 +62,7 @@ def create_payload(
                         ]
                     },
                     date_filter,
-                ]
+                ],
             },
             "$filter": {"startSourceRankPercentile": 0, "endSourceRankPercentile": 30},
         },

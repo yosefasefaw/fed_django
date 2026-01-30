@@ -22,13 +22,14 @@
                 <tr>
                     <th>Date</th>
                     <th>Type</th>
-                    <th>ID</th>
-                    <th>Details</th>
+                    <th>Focus</th>
+                    <th>FOMC Date</th>
+                    <th>Delta</th>
                 </tr>
             </thead>
             <tbody>
                 {% for report in reports %}
-                <tr class="clickable-row" {% if report.report_type == "summary" %} 
+                <tr class="clickable-row" {% if report.report_type == "summary" %}
                     data-href="{% url 'multi_agent_systems:summary_detail' uuid=report.uuid %}" {% else %}
                     data-href="{% url 'multi_agent_systems:topic_analysis_detail' uuid=report.uuid %}" {% endif %}>
                     <td class="date-cell">{{ report.created_at|date:"Y-m-d H:i" }}</td>
@@ -36,23 +37,29 @@
                         {% if report.report_type == "summary" %}
                         <span class="type-badge type-summary">Summary</span>
                         {% else %}
-                        <span class="type-badge type-analysis">Topic Analysis</span>
+                        <span class="type-badge type-analysis">Analysis</span>
                         {% endif %}
                     </td>
-                    <td><span class="uuid-chip">{{ report.uuid|stringformat:".8s" }}...</span></td>
-                    <td class="details-cell">
-                        {% if report.report_type == "summary" %}
-                        <span class="count-badge">{{ report.article_count }} articles</span>
-                        <span class="preview-text">{{ report.summary_text|truncatewords:8 }}</span>
+                    <td>
+                        <span
+                            class="focus-badge {% if 'post' in report.get_timing_focus|lower %}focus-post{% elif 'pre' in report.get_timing_focus|lower %}focus-pre{% else %}focus-announcement{% endif %}">
+                            {{ report.get_timing_focus }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if report.fomc_announcement_datetime %}
+                        {{ report.fomc_announcement_datetime|date:"Y-m-d" }}
                         {% else %}
-                        <span class="count-badge">{{ report.topic_analyses.count }} topics</span>
-                        <span class="count-badge">{{ report.articles_provided.count }} articles</span>
+                        <span class="text-muted">-</span>
                         {% endif %}
+                    </td>
+                    <td>
+                        {{ report.get_timing_delta|default:"-" }}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="empty-row">No reports generated yet. Run the scheduler to generate summaries
+                    <td colspan="5" class="empty-row">No reports generated yet. Run the scheduler to generate summaries
                         and analyses.</td>
                 </tr>
                 {% endfor %}

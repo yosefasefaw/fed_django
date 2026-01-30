@@ -54,13 +54,17 @@ class SummaryDetailView(DetailView):
         summary = self.object
 
         # Navigation: Get previous and next summaries based on created_at
-        context["prev_summary"] = Summary.objects.filter(
-            created_at__lt=summary.created_at
-        ).order_by("-created_at").first()
+        context["prev_summary"] = (
+            Summary.objects.filter(created_at__lt=summary.created_at)
+            .order_by("-created_at")
+            .first()
+        )
 
-        context["next_summary"] = Summary.objects.filter(
-            created_at__gt=summary.created_at
-        ).order_by("created_at").first()
+        context["next_summary"] = (
+            Summary.objects.filter(created_at__gt=summary.created_at)
+            .order_by("created_at")
+            .first()
+        )
 
         # FOMC Timing Context
         context["timing_focus"] = summary.get_timing_focus
@@ -86,13 +90,17 @@ class TopicAnalysisGroupDetailView(DetailView):
         group = self.object
 
         # Navigation: Get previous and next groups based on created_at
-        context["prev_group"] = TopicAnalysisGroup.objects.filter(
-            created_at__lt=group.created_at
-        ).order_by("-created_at").first()
-        
-        context["next_group"] = TopicAnalysisGroup.objects.filter(
-            created_at__gt=group.created_at
-        ).order_by("created_at").first()
+        context["prev_group"] = (
+            TopicAnalysisGroup.objects.filter(created_at__lt=group.created_at)
+            .order_by("-created_at")
+            .first()
+        )
+
+        context["next_group"] = (
+            TopicAnalysisGroup.objects.filter(created_at__gt=group.created_at)
+            .order_by("created_at")
+            .first()
+        )
 
         # FOMC Timing Context
         context["timing_focus"] = group.get_timing_focus
@@ -180,7 +188,9 @@ class LatestTopicAnalysisRedirectView(View):
     def get(self, request):
         latest = TopicAnalysisGroup.objects.order_by("-created_at").first()
         if latest:
-            return redirect("multi_agent_systems:topic_analysis_detail", uuid=latest.uuid)
+            return redirect(
+                "multi_agent_systems:topic_analysis_detail", uuid=latest.uuid
+            )
         else:
             return render(request, "multi_agent_systems/topic_analysis_empty.html")
 

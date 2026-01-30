@@ -4,15 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('multi_agent_systems', '0002_topicanalysisgroup_topicanalysis_topiccitation_and_more'),
+        (
+            "multi_agent_systems",
+            "0002_topicanalysisgroup_topicanalysis_topiccitation_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicanalysisgroup',
-            name='context',
-            field=models.CharField(default='general', help_text='Analysis context: pre_announcement, post_announcement, general', max_length=50),
+            model_name="topicanalysisgroup",
+            name="context",
+            field=models.CharField(
+                default="general",
+                help_text="Analysis context: pre_announcement, post_announcement, general",
+                max_length=50,
+            ),
         ),
     ]

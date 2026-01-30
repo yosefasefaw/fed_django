@@ -101,7 +101,9 @@ class Command(BaseCommand):
                 articles_qs = get_articles_from_db(start_date, end_date)
                 articles_list = list(articles_qs[:limit])
 
-                self.stdout.write(f"   ∟ Agent Query: Found {len(articles_list)} articles in DB for range {start_date.date()} to {end_date.date()}")
+                self.stdout.write(
+                    f"   ∟ Agent Query: Found {len(articles_list)} articles in DB for range {start_date.date()} to {end_date.date()}"
+                )
 
                 if articles_list:
                     # Shared Prep
